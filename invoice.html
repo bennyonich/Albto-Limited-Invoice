@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice — Albto Limited</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy-deep: #0a1628;
+            --navy-mid: #1a2b4a;
+            --gold: #c9a227;
+            --gold-light: #d4b84a;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --bg-light: #f8f9fa;
+            --border: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            background: #f0f2f5;
+            line-height: 1.6;
+        }
+
+        .toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--navy-deep);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        }
+
+        .toolbar-hint {
+            color: rgba(255,255,255,0.55);
+            font-size: 12px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar button {
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .toolbar button:hover { opacity: 0.88; }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--navy-deep);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.12);
+            color: var(--white);
+        }
+
+        .invoice-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: var(--white);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .editable {
+            outline: none;
+            border-radius: 3px;
+            transition: background 0.15s, box-shadow 0.15s;
+            cursor: text;
+            min-width: 1ch;
+        }
+
+        .editable:hover {
+            background: rgba(201, 162, 39, 0.08);
+        }
+
+        .editable:focus {
+            background: rgba(201, 162, 39, 0.14);
+            box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.35);
+        }
+
+        .editable.placeholder:empty::before {
+            content: attr(data-placeholder);
+            color: var(--text-muted);
+            font-style: italic;
+            pointer-events: none;
+        }
+
+        .invoice-header .editable:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .invoice-header .editable:focus {
+            background: rgba(255,255,255,0.12);
+            box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.5);
+        }
+
+        .invoice-header .editable.placeholder:empty::before {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .grand-total .editable:hover {
+            background: rgba(255,255,255,0.06);
+        }
+
+        .grand-total .editable:focus {
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.5);
+        }
+
+        /* HEADER */
+        .invoice-header {
+            background: var(--navy-deep);
+            padding: 40px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-logo {
+            width: 60px;
+            height: 60px;
+            background: var(--white);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--navy-deep);
+        }
+
+        .brand-info h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: var(--white);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .brand-info p {
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .brand-tagline {
+            color: rgba(255,255,255,0.5);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+
+        .invoice-meta {
+            text-align: right;
+        }
+
+        .invoice-label {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--navy-deep);
+            padding: 6px 20px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .invoice-number {
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .invoice-number .editable {
+            color: var(--gold);
+            display: inline-block;
+        }
+
+        .invoice-date {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* CLIENT & PROJECT INFO */
+        .info-section {
+            padding: 30px 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-block h3 {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .info-block p {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .info-block .muted,
+        .info-block .muted.editable {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* SCOPE SUMMARY */
+        .scope-summary {
+            padding: 24px 50px;
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .scope-summary h3 {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--navy-mid);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .scope-summary p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* LINE ITEMS TABLE */
+        .items-section {
+            padding: 30px 50px;
+        }
+
+        .items-header {
+            display: grid;
+            grid-template-columns: 50px 1fr 140px;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 2px solid var(--navy-deep);
+            margin-bottom: 8px;
+        }
+
+        .items-header span {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--navy-deep);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .line-item {
+            display: grid;
+            grid-template-columns: 50px 1fr 140px;
+            gap: 16px;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .line-item:last-child {
+            border-bottom: 2px solid var(--navy-deep);
+        }
+
+        .item-number {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .item-details h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .item-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .item-details ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 3px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .item-details ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .item-amount {
+            text-align: right;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--navy-deep);
+            align-self: start;
+            padding-top: 2px;
+        }
+
+        /* TOTALS */
+        .totals-section {
+            padding: 0 50px 30px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .total-row.grand-total {
+            background: var(--navy-deep);
+            margin: 0 -50px;
+            padding: 20px 50px;
+            border-bottom: none;
+            margin-top: 8px;
+        }
+
+        .total-row .label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .total-row .amount {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .total-row.grand-total .label {
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .total-row.grand-total .amount,
+        .total-row.grand-total .amount.editable {
+            color: var(--white);
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .amount-words {
+            padding: 16px 50px 30px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* TERMS */
+        .terms-section {
+            padding: 30px 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .terms-block h4 {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--navy-deep);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .terms-block p, .terms-block li {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .terms-block ul {
+            padding-left: 16px;
+        }
+
+        .terms-block ul li {
+            margin-bottom: 4px;
+        }
+
+        /* FOOTER */
+        .invoice-footer {
+            background: var(--bg-light);
+            padding: 20px 50px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .invoice-footer p {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .invoice-footer .brand-footer {
+            font-family: 'Playfair Display', serif;
+            font-size: 14px;
+            color: var(--navy-deep);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--navy-deep);
+            color: var(--white);
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.25s, transform 0.25s;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media print {
+            body { background: white; }
+            .toolbar, .toast { display: none !important; }
+            .invoice-container { box-shadow: none; margin: 0; border-radius: 0; }
+            .editable:hover, .editable:focus {
+                background: transparent !important;
+                box-shadow: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar-hint { text-align: center; }
+            .toolbar-actions { justify-content: center; }
+            .invoice-header { flex-direction: column; gap: 20px; padding: 30px; }
+            .info-section { grid-template-columns: 1fr; padding: 24px 30px; }
+            .items-section { padding: 24px 30px; }
+            .line-item { grid-template-columns: 40px 1fr 100px; }
+            .totals-section { padding: 0 30px 24px; }
+            .total-row.grand-total { margin: 0 -30px; padding: 16px 30px; }
+            .amount-words { padding: 12px 30px 24px; }
+            .terms-section { grid-template-columns: 1fr; padding: 24px 30px; }
+            .invoice-footer { padding: 16px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <span class="toolbar-hint">Click any highlighted field to edit · Totals recalculate automatically</span>
+    <div class="toolbar-actions">
+        <button type="button" class="btn-secondary" id="btn-save">Save Draft</button>
+        <button type="button" class="btn-secondary" id="btn-load">Load Draft</button>
+        <button type="button" class="btn-secondary" id="btn-reset">Reset</button>
+        <button type="button" class="btn-primary" id="btn-print">Print / PDF</button>
+    </div>
+</div>
+
+<div class="invoice-container" id="invoice">
+
+    <!-- HEADER -->
+    <div class="invoice-header">
+        <div class="brand-section">
+            <div class="brand-logo editable" contenteditable="true" spellcheck="false">A</div>
+            <div class="brand-info">
+                <h1 class="editable" contenteditable="true" spellcheck="false">ALBTO LIMITED</h1>
+                <p class="editable" contenteditable="true" spellcheck="false">Project Management</p>
+                <p class="brand-tagline editable" contenteditable="true" spellcheck="false">Plan | Deliver | Succeed</p>
+            </div>
+        </div>
+        <div class="invoice-meta">
+            <div class="invoice-label editable" contenteditable="true" spellcheck="false">Tax Invoice</div>
+            <div class="invoice-number">Invoice No: <span class="editable" contenteditable="true" spellcheck="false">ALB-INV-2026-001</span></div>
+            <div class="invoice-date">Date: <span class="editable" contenteditable="true" spellcheck="false">September 2, 2026</span></div>
+        </div>
+    </div>
+
+    <!-- CLIENT & PROJECT INFO -->
+    <div class="info-section">
+        <div class="info-block">
+            <h3>Bill To</h3>
+            <p><strong class="editable placeholder" contenteditable="true" spellcheck="false" data-placeholder="Client Name">[Client Name]</strong></p>
+            <p class="muted editable placeholder" contenteditable="true" spellcheck="false" data-placeholder="Client Address">[Client Address]</p>
+            <p class="muted editable placeholder" contenteditable="true" spellcheck="false" data-placeholder="Client Phone / Email">[Client Phone / Email]</p>
+        </div>
+        <div class="info-block">
+            <h3>Project Details</h3>
+            <p><strong class="editable" contenteditable="true" spellcheck="false">Post-Renovation Deep Cleaning</strong></p>
+            <p class="muted editable" contenteditable="true" spellcheck="false">Property: Duplex Office Complex</p>
+            <p class="muted editable placeholder" contenteditable="true" spellcheck="false" data-placeholder="Duration">Duration: [Insert Duration]</p>
+        </div>
+    </div>
+
+    <!-- SCOPE SUMMARY -->
+    <div class="scope-summary">
+        <h3>Scope of Service</h3>
+        <p class="editable" contenteditable="true" spellcheck="false">Comprehensive post-renovation deep cleaning services comprising three distinct work packages: (1) deep washing and chemical treatment of all interior and exterior surfaces; (2) mechanical polishing, buffing, and shining of all floor surfaces and fixtures; and (3) detailed washing and shining of all glazing, woodwork, and fitted furniture.</p>
+    </div>
+
+    <!-- LINE ITEMS -->
+    <div class="items-section" id="line-items">
+        <div class="items-header">
+            <span>No.</span>
+            <span>Description of Service</span>
+            <span style="text-align:right;">Amount (₦)</span>
+        </div>
+
+        <div class="line-item">
+            <div class="item-number editable" contenteditable="true" spellcheck="false">01</div>
+            <div class="item-details">
+                <h4 class="editable" contenteditable="true" spellcheck="false">Deep Washing & Chemical Treatment</h4>
+                <ul>
+                    <li class="editable" contenteditable="true" spellcheck="false">Complete washing of entire duplex office complex using industrial-grade detergents, stain removers, and customised cleaning agents</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">Staircase steps and handrails — degreasing, descaling, and sanitisation</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">All rooms and internal doors — dust removal, surface washing, and spot treatment</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">All toilets and washrooms — deep disinfection, descaling, and fixture polishing</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">All verandas and covered walkways — pressure washing and chemical treatment</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">Entire external perimeter — facade cleaning, debris removal, and pavement washing</li>
+                </ul>
+            </div>
+            <div class="item-amount editable" contenteditable="true" spellcheck="false" data-amount>270000</div>
+        </div>
+
+        <div class="line-item">
+            <div class="item-number editable" contenteditable="true" spellcheck="false">02</div>
+            <div class="item-details">
+                <h4 class="editable" contenteditable="true" spellcheck="false">Polishing, Buffing, Blowing & Shining</h4>
+                <ul>
+                    <li class="editable" contenteditable="true" spellcheck="false">Entire floor surfaces — mechanical scrubbing, polishing, and high-gloss buffing</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">Staircase steps and handrails — metal/wood polishing and protective finish</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">All rooms and internal doors — surface buffing and shine restoration</li>
+                </ul>
+            </div>
+            <div class="item-amount editable" contenteditable="true" spellcheck="false" data-amount>90000</div>
+        </div>
+
+        <div class="line-item">
+            <div class="item-number editable" contenteditable="true" spellcheck="false">03</div>
+            <div class="item-details">
+                <h4 class="editable" contenteditable="true" spellcheck="false">Glazing, Woodwork & Fitted Furniture Cleaning</h4>
+                <ul>
+                    <li class="editable" contenteditable="true" spellcheck="false">All window glasses — interior and exterior washing, streak-free shining</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">Wooden shelves, cabinets, and surfaces — dusting, washing, and polish application</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">All internal doors — panel cleaning, hinge lubrication, and finish restoration</li>
+                    <li class="editable" contenteditable="true" spellcheck="false">All wardrobes and built-in storage — interior and exterior deep cleaning</li>
+                </ul>
+            </div>
+            <div class="item-amount editable" contenteditable="true" spellcheck="false" data-amount>60000</div>
+        </div>
+    </div>
+
+    <!-- TOTALS -->
+    <div class="totals-section" id="totals" data-vat-rate="7.5">
+        <div class="total-row">
+            <span class="label">Subtotal</span>
+            <span class="amount" id="subtotal">₦420,000.00</span>
+        </div>
+        <div class="total-row">
+            <span class="label">VAT (<span class="editable" contenteditable="true" spellcheck="false" id="vat-rate" data-vat-input>7.5</span>%)</span>
+            <span class="amount" id="vat">₦31,500.00</span>
+        </div>
+        <div class="total-row grand-total">
+            <span class="label">Total Amount Payable</span>
+            <span class="amount" id="grand-total">₦451,500.00</span>
+        </div>
+    </div>
+
+    <div class="amount-words editable" contenteditable="true" spellcheck="false" id="amount-words">
+        Four Hundred and Fifty-One Thousand, Five Hundred Naira Only
+    </div>
+
+    <!-- TERMS -->
+    <div class="terms-section">
+        <div class="terms-block">
+            <h4>Payment Terms</h4>
+            <ul>
+                <li class="editable" contenteditable="true" spellcheck="false">50% mobilisation fee due upon acceptance of invoice</li>
+                <li class="editable" contenteditable="true" spellcheck="false">50% balance due upon completion and client sign-off</li>
+                <li class="editable" contenteditable="true" spellcheck="false">Payment within 7 days of invoice date</li>
+                <li class="editable" contenteditable="true" spellcheck="false">Late payments subject to 2% monthly service charge</li>
+            </ul>
+        </div>
+        <div class="terms-block">
+            <h4>Bank Details</h4>
+            <p><strong>Account Name:</strong> <span class="editable" contenteditable="true" spellcheck="false">Albto Limited</span></p>
+            <p><strong>Bank:</strong> <span class="editable placeholder" contenteditable="true" spellcheck="false" data-placeholder="Bank Name">[Insert Bank Name]</span></p>
+            <p><strong>Account Number:</strong> <span class="editable placeholder" contenteditable="true" spellcheck="false" data-placeholder="Account Number">[Insert Account Number]</span></p>
+            <p><strong>Sort Code:</strong> <span class="editable placeholder" contenteditable="true" spellcheck="false" data-placeholder="Sort Code">[Insert Sort Code]</span></p>
+            <p style="margin-top:8px;"><strong>Contact:</strong> <span class="editable placeholder" contenteditable="true" spellcheck="false" data-placeholder="Phone | Email">[Phone] | [Email]</span></p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="invoice-footer">
+        <p class="brand-footer editable" contenteditable="true" spellcheck="false">ALBTO LIMITED</p>
+        <p class="editable" contenteditable="true" spellcheck="false">Project Management & Professional Services | Plan | Deliver | Succeed</p>
+        <p style="margin-top:4px;" class="editable" contenteditable="true" spellcheck="false">This is a computer-generated document and does not require a signature.</p>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+    const STORAGE_KEY = 'albto-invoice-draft';
+    const invoice = document.getElementById('invoice');
+    const toast = document.getElementById('toast');
+
+    const ONES = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+        'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const TENS = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function parseAmount(text) {
+        const n = parseFloat(String(text).replace(/[^\d.]/g, ''));
+        return isNaN(n) ? 0 : n;
+    }
+
+    function formatAmount(n) {
+        return '₦' + n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function wordsUnder1000(n) {
+        if (n === 0) return '';
+        if (n < 20) return ONES[n];
+        if (n < 100) return TENS[Math.floor(n / 10)] + (n % 10 ? ' ' + ONES[n % 10] : '');
+        return ONES[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' and ' + wordsUnder1000(n % 100) : '');
+    }
+
+    function numberToWords(n) {
+        n = Math.floor(n);
+        if (n === 0) return 'Zero Naira Only';
+
+        const parts = [];
+        const scales = [
+            { value: 1e9, label: 'Billion' },
+            { value: 1e6, label: 'Million' },
+            { value: 1e3, label: 'Thousand' }
+        ];
+
+        let rem = n;
+        for (const { value, label } of scales) {
+            const chunk = Math.floor(rem / value);
+            if (chunk) {
+                parts.push(wordsUnder1000(chunk) + ' ' + label);
+                rem %= value;
+            }
+        }
+        if (rem) parts.push(wordsUnder1000(rem));
+
+        let result = parts.join(', ');
+        if (n >= 1000 && n % 1000 !== 0 && n % 100 === 0) {
+            result = result.replace(/, ([^,]+)$/, ' and $1');
+        }
+        return result + ' Naira Only';
+    }
+
+    function getVatRate() {
+        const el = document.getElementById('vat-rate');
+        const rate = parseFloat(el.textContent.replace(/[^\d.]/g, ''));
+        return isNaN(rate) ? 7.5 : rate;
+    }
+
+    function recalculateTotals(updateWords = true) {
+        const amounts = document.querySelectorAll('[data-amount]');
+        let subtotal = 0;
+
+        amounts.forEach(el => {
+            const val = parseAmount(el.textContent);
+            subtotal += val;
+            el.textContent = formatAmount(val);
+        });
+
+        const vatRate = getVatRate();
+        const vat = subtotal * (vatRate / 100);
+        const grand = subtotal + vat;
+
+        document.getElementById('subtotal').textContent = formatAmount(subtotal);
+        document.getElementById('vat').textContent = formatAmount(vat);
+        document.getElementById('grand-total').textContent = formatAmount(grand);
+
+        if (updateWords) {
+            document.getElementById('amount-words').textContent = numberToWords(grand);
+        }
+    }
+
+    function saveDraft() {
+        localStorage.setItem(STORAGE_KEY, invoice.innerHTML);
+        showToast('Draft saved');
+    }
+
+    function loadDraft() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) {
+            showToast('No saved draft found');
+            return;
+        }
+        invoice.innerHTML = saved;
+        bindEvents();
+        recalculateTotals(false);
+        showToast('Draft loaded');
+    }
+
+    function resetInvoice() {
+        if (!confirm('Reset invoice to defaults? Unsaved changes will be lost.')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+    }
+
+    function bindEvents() {
+        document.querySelectorAll('[data-amount]').forEach(el => {
+            el.addEventListener('blur', () => recalculateTotals());
+            el.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+            });
+        });
+
+        const vatInput = document.getElementById('vat-rate');
+        if (vatInput) {
+            vatInput.addEventListener('blur', () => recalculateTotals());
+            vatInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); vatInput.blur(); }
+            });
+        }
+
+        document.querySelectorAll('.editable').forEach(el => {
+            el.addEventListener('keydown', e => {
+                if (e.key === 'Enter' && !e.shiftKey && el.tagName !== 'P' && !el.closest('.scope-summary')) {
+                    e.preventDefault();
+                    el.blur();
+                }
+            });
+            el.addEventListener('paste', e => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+                document.execCommand('insertText', false, text);
+            });
+        });
+    }
+
+    document.getElementById('btn-print').addEventListener('click', () => window.print());
+    document.getElementById('btn-save').addEventListener('click', saveDraft);
+    document.getElementById('btn-load').addEventListener('click', loadDraft);
+    document.getElementById('btn-reset').addEventListener('click', resetInvoice);
+
+    bindEvents();
+    recalculateTotals(false);
+})();
+</script>
+
+</body>
+</html>
