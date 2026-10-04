@@ -1,0 +1,805 @@
+# Machine-readable Project Workflow Bible — one record per process row.
+# Columns match PROJECT_WORKFLOW_BIBLE.md
+
+workflow_processes:
+  version: "1.0.0"
+  columns:
+    - stage
+    - process
+    - pm_role
+    - input
+    - activity
+    - output
+    - required_data
+    - validation
+    - gate
+    - automation
+    - trigger
+    - alert
+    - escalation
+    - report
+
+  processes:
+    # --- 01 Intake ---
+    - id: PRC-INT-001
+      stage: Project Intake
+      process: Capture request
+      pm_role: PM / Requesting unit
+      input: Idea or service request
+      activity: Record intake form
+      output: Draft intake record
+      required_data: project_name, problem_statement, business_need, requesting_unit, proposed_sponsor, strategic_objective, desired_outcome, urgency, initial_estimate, target_date
+      validation: All required fields present
+      gate: "No"
+      automation: Duplicate initiative scan
+      trigger: New request submitted
+      alert: Missing sponsor
+      escalation: Portfolio office
+      report: Intake register
+
+    - id: PRC-INT-002
+      stage: Project Intake
+      process: Classify initiative
+      pm_role: PM
+      input: Intake record
+      activity: Determine project vs BAU vs programme
+      output: Classification tag
+      required_data: problem_statement, business_need
+      validation: problem_clearly_defined; request_classified
+      gate: "No"
+      automation: Rules + optional AI classification
+      trigger: Intake complete
+      alert: Ambiguous scope
+      escalation: Sponsor
+      report: Intake
+
+    - id: PRC-INT-003
+      stage: Project Intake
+      process: Intake gate decision
+      pm_role: Sponsor / governance
+      input: Project Concept Record
+      activity: ACCEPT / REJECT / RETURN / HOLD
+      output: Gate decision
+      required_data: PROJECT_CONCEPT_RECORD
+      validation: system_checks_passed
+      gate: "Yes"
+      automation: Block advance unless decision recorded
+      trigger: Intake submission
+      alert: Pending decision
+      escalation: Portfolio board
+      report: Gate log
+
+    # --- 02 Business Case ---
+    - id: PRC-BC-001
+      stage: Business Case
+      process: Inherit intake
+      pm_role: PM / Sponsor
+      input: Accepted intake
+      activity: Pre-fill business case
+      output: Draft business case
+      required_data: Intake fields
+      validation: business_need_exists
+      gate: "No"
+      automation: Field mapping from intake
+      trigger: Intake ACCEPT
+      alert: Data mismatch
+      escalation: PM
+      report: Business Case
+
+    - id: PRC-BC-002
+      stage: Business Case
+      process: Options analysis
+      pm_role: Sponsor / PM
+      input: Problem / opportunity
+      activity: Assess options; recommend option
+      output: Preferred option
+      required_data: options_considered, recommended_option, costs, benefits
+      validation: options_considered
+      gate: "No"
+      automation: AI option comparison (optional)
+      trigger: New option documented
+      alert: Missing analysis
+      escalation: Sponsor
+      report: Business Case
+
+    - id: PRC-BC-003
+      stage: Business Case
+      process: Financial case
+      pm_role: PM / Finance
+      input: Cost and benefit estimates
+      activity: Build financial / non-financial case
+      output: Financial case section
+      required_data: costs, funding_source, expected_benefits
+      validation: costs_estimated; funding_source_identified
+      gate: "No"
+      automation: NPV / payback calculators
+      trigger: Cost update
+      alert: Funding not identified
+      escalation: Finance
+      report: Business Case
+
+    - id: PRC-BC-004
+      stage: Business Case
+      process: Risks and dependencies (BC)
+      pm_role: PM
+      input: Scope hypothesis
+      activity: Identify major risks and dependencies
+      output: BC risk summary
+      required_data: risks, dependencies, constraints
+      validation: major_risks_identified
+      gate: "No"
+      automation: Link to risk register stub
+      trigger: Risk added
+      alert: No owner
+      escalation: Sponsor
+      report: Business Case
+
+    # --- Gate 01 ---
+    - id: PRC-G01-001
+      stage: Gate 01
+      process: Business case approval
+      pm_role: Approval authority
+      input: Complete business case
+      activity: APPROVE / REWORK / HOLD / REJECT
+      output: Gate record
+      required_data: business_case_complete, sponsor_identified, benefits_defined, preliminary_cost_defined, preliminary_schedule_defined, major_risks_identified
+      validation: All gate required items true
+      gate: "Yes"
+      automation: Enforce can_advance; REWORK → BUSINESS_CASE
+      trigger: BC submission
+      alert: Pending approval
+      escalation: Executive sponsor
+      report: Gate log
+
+    # --- 03 Charter ---
+    - id: PRC-CH-001
+      stage: Project Charter
+      process: Charter from BC
+      pm_role: PM
+      input: Approved business case
+      activity: Inherit fields; add governance
+      output: Draft charter
+      required_data: sponsor, pm, business_owner, purpose, objectives, scope, deliverables, budget, milestones
+      validation: No duplicate re-entry of BC facts
+      gate: "No"
+      automation: BC → charter mapping; variance flags
+      trigger: Gate 01 APPROVE
+      alert: Material variance vs BC
+      escalation: Sponsor
+      report: Charter
+
+    - id: PRC-CH-002
+      stage: Project Charter
+      process: Baseline recording
+      pm_role: PM
+      input: Approved charter content
+      activity: Record BUSINESS_CASE_BASELINE and CHARTER_BASELINE
+      output: Baseline pair
+      required_data: baseline snapshots
+      validation: baselines immutable after authorisation
+      gate: "No"
+      automation: Snapshot on approval
+      trigger: Charter approval
+      alert: Unsigned baseline
+      escalation: PMO
+      report: Baselines
+
+    # --- Gate 02 ---
+    - id: PRC-G02-001
+      stage: Gate 02
+      process: Project authorisation
+      pm_role: Sponsor
+      input: Approved charter
+      activity: Confirm roles, budget, governance
+      output: AUTHORISED project
+      required_data: sponsor_confirmed, pm_appointed, business_owner_confirmed, budget_authorised, governance_established, objectives_approved, charter_approved
+      validation: All required true
+      gate: "Yes"
+      automation: Set project_status AUTHORISED
+      trigger: Charter submitted
+      alert: Missing PM appointment
+      escalation: Executive
+      report: Authorisation register
+
+    # --- 04 Discovery & Requirements ---
+    - id: PRC-DR-001
+      stage: Discovery & Requirements
+      process: Gather requirements
+      pm_role: BA / PM
+      input: Business need
+      activity: Elicit and document by category
+      output: Requirements register
+      required_data: REQ-* records with category
+      validation: Unique IDs; category assigned
+      gate: "No"
+      automation: AI completeness hints
+      trigger: Requirement change
+      alert: Unmapped requirement
+      escalation: PM
+      report: Requirements trace matrix
+
+    - id: PRC-DR-002
+      stage: Discovery & Requirements
+      process: Traceability linking
+      pm_role: BA / PM
+      input: Requirements + deliverables
+      activity: Link req → deliverable → WP → activity → acceptance
+      output: Traceability graph
+      required_data: trace links
+      validation: Traceability rules (where in scope)
+      gate: "No"
+      automation: Graph validation on save
+      trigger: Deliverable or req change
+      alert: Orphan requirement
+      escalation: PM
+      report: Trace matrix
+
+    # --- 05 Scope ---
+    - id: PRC-SC-001
+      stage: Scope Definition
+      process: Scope baseline
+      pm_role: PM
+      input: Requirements register
+      activity: Define in/out, assumptions, constraints, dependencies, interfaces
+      output: SCOPE_BASELINE
+      required_data: in_scope, out_of_scope, assumptions, constraints, dependencies, interfaces
+      validation: exclusions_defined
+      gate: "No"
+      automation: Diff vs charter scope
+      trigger: Scope edit
+      alert: Scope creep vs charter
+      escalation: Sponsor
+      report: Scope
+
+    - id: PRC-SC-002
+      stage: Scope Definition
+      process: WBS generation
+      pm_role: PM
+      input: Deliverables list
+      activity: Build WBS to work packages
+      output: WBS
+      required_data: deliverables, work_packages
+      validation: WBS complete for in-scope deliverables
+      gate: "No"
+      automation: WBS integrity checks
+      trigger: Deliverable added
+      alert: Missing WP
+      escalation: PM
+      report: WBS
+
+    - id: PRC-SC-003
+      stage: Scope Definition
+      process: Acceptance criteria
+      pm_role: PM / Business
+      input: Deliverables
+      activity: Define acceptance criteria per deliverable
+      output: Acceptance criteria set
+      required_data: acceptance_criteria
+      validation: acceptance_criteria_defined
+      gate: "No"
+      automation: Link to requirements
+      trigger: Deliverable change
+      alert: Missing criteria
+      escalation: Business owner
+      report: Scope / Quality
+
+    # --- Gate 03 ---
+    - id: PRC-G03-001
+      stage: Gate 03
+      process: Scope validation
+      pm_role: PM / stakeholders
+      input: Scope baseline + WBS
+      activity: Run scope_validation checks
+      output: scope_approved or block list
+      required_data: scope_validation.checks.*
+      validation: All checks pass
+      gate: "Yes"
+      automation: DO NOT PROCEED; list missing items
+      trigger: Scope submission
+      alert: Failed check list to PM
+      escalation: Sponsor
+      report: Scope gate
+
+    # --- 06 Integrated Planning ---
+    - id: PRC-PL-001
+      stage: Integrated Planning
+      process: Schedule
+      pm_role: PM
+      input: WBS
+      activity: Build schedule; critical path; baseline dates
+      output: Schedule baseline
+      required_data: activities, durations, dependencies, milestones, float
+      validation: critical_path_identified
+      gate: "No"
+      automation: CPM calc; float monitoring
+      trigger: Schedule change
+      alert: Float breach
+      escalation: PM
+      report: Schedule
+
+    - id: PRC-PL-002
+      stage: Integrated Planning
+      process: Cost plan
+      pm_role: PM / Finance
+      input: WBS + resources
+      activity: Budget, estimates, contingency, cash flow
+      output: Cost baseline
+      required_data: budget, estimates, contingency
+      validation: budget_approved (at gate)
+      gate: "No"
+      automation: EAC / variance engines
+      trigger: Cost change
+      alert: Over budget forecast
+      escalation: Sponsor
+      report: Cost
+
+    - id: PRC-PL-003
+      stage: Integrated Planning
+      process: Resource plan
+      pm_role: PM
+      input: WBS + schedule
+      activity: Identify people, equipment, specialists
+      output: Resource plan
+      required_data: resources by activity
+      validation: resources_identified
+      gate: "No"
+      automation: Overallocation check
+      trigger: Resource assignment
+      alert: Conflict
+      escalation: PM
+      report: Resources
+
+    - id: PRC-PL-004
+      stage: Integrated Planning
+      process: Procurement plan
+      pm_role: PM / Procurement
+      input: Scope + schedule
+      activity: Packages, suppliers, lead times, contracts
+      output: Procurement plan
+      required_data: packages, suppliers, lead_times
+      validation: procurement_plan_complete
+      gate: "No"
+      automation: Lead time vs milestone check
+      trigger: Vendor delay event
+      alert: Late delivery risk
+      escalation: Procurement head
+      report: Procurement
+
+    - id: PRC-PL-005
+      stage: Integrated Planning
+      process: Risk plan
+      pm_role: PM / Risk owner
+      input: BC risks + detailed scope
+      activity: Risk register, owners, mitigations, triggers
+      output: Risk management plan
+      required_data: risk register fields
+      validation: risk_plan_complete
+      gate: "No"
+      automation: risk_engine continuous monitor
+      trigger: risk trigger fired
+      alert: Threshold exceeded
+      escalation: Sponsor
+      report: Risk
+
+    - id: PRC-PL-006
+      stage: Integrated Planning
+      process: Quality plan
+      pm_role: PM / Quality
+      input: Requirements + deliverables
+      activity: Standards, inspection, test approach
+      output: Quality plan
+      required_data: quality_standards
+      validation: quality_plan_complete
+      gate: "No"
+      automation: quality_engine lifecycle
+      trigger: test fail
+      alert: Defect threshold
+      escalation: PM
+      report: Quality
+
+    - id: PRC-PL-007
+      stage: Integrated Planning
+      process: Communications plan
+      pm_role: PM
+      input: Stakeholder register
+      activity: Reports, meetings, frequency, recipients
+      output: Communications plan
+      required_data: stakeholders, comms_schedule
+      validation: communication_plan_complete
+      gate: "No"
+      automation: Report section generation
+      trigger: Stakeholder change
+      alert: Missing recipient
+      escalation: PM
+      report: Stakeholders
+
+    - id: PRC-PL-008
+      stage: Integrated Planning
+      process: Change process
+      pm_role: PM / Governance
+      input: Governance model
+      activity: Define change workflow and thresholds
+      output: Change management plan
+      required_data: approval_authority, thresholds
+      validation: change_process_established
+      gate: "No"
+      automation: change_engine routing
+      trigger: change request
+      alert: Pending approval
+      escalation: Change board
+      report: Change
+
+    # --- Gate 04 ---
+    - id: PRC-G04-001
+      stage: Gate 04
+      process: Plan approval
+      pm_role: Governance
+      input: Integrated PM plan
+      activity: APPROVE PLAN
+      output: PROJECT_BASELINE
+      required_data: plan_approval.checks.*
+      validation: All plan checks pass
+      gate: "Yes"
+      automation: Create PROJECT_BASELINE snapshot
+      trigger: Plan submission
+      alert: Incomplete plan
+      escalation: Sponsor
+      report: Gate log
+
+    # --- 07 Mobilisation ---
+    - id: PRC-MO-001
+      stage: Mobilisation
+      process: Readiness checklist
+      pm_role: PM
+      input: Baseline plan
+      activity: Complete mobilisation checklist
+      output: MOBILISATION_RECORD
+      required_data: readiness_checklist items
+      validation: Each item status recorded
+      gate: "No"
+      automation: Roll up readiness %
+      trigger: Checklist item update
+      alert: Blocker item open
+      escalation: Sponsor
+      report: Readiness
+
+    # --- Gate 05 ---
+    - id: PRC-G05-001
+      stage: Gate 05
+      process: Execution readiness
+      pm_role: PM / Sponsor
+      input: Readiness scores
+      activity: READY / NOT READY
+      output: Gate decision
+      required_data: dimension scores (scope, budget, resources, procurement, design, risk, governance)
+      validation: READY or authorised override
+      gate: "Yes"
+      automation: Block execution without READY or override
+      trigger: Mobilisation complete
+      alert: NOT READY summary
+      escalation: Executive override path
+      report: Readiness
+
+    # --- 08 Execution ---
+    - id: PRC-EX-001
+      stage: Execution
+      process: Progress update
+      pm_role: PM
+      input: Actuals
+      activity: Update activity progress and dates
+      output: Status record
+      required_data: actual_dates, percent_complete
+      validation: Variance calc
+      gate: "No"
+      automation: schedule_intelligence
+      trigger: ACTIVITY_PROGRESS_UPDATED
+      alert: Slippage
+      escalation: PM
+      report: Progress
+
+    - id: PRC-EX-002
+      stage: Execution
+      process: Deliverable tracking
+      pm_role: PM
+      input: WBS deliverables
+      activity: Track deliverable status
+      output: Deliverable status
+      required_data: deliverable_id, status
+      validation: Linked to acceptance criteria
+      gate: "No"
+      automation: Roll up to milestones
+      trigger: Deliverable complete
+      alert: Late deliverable
+      escalation: Sponsor
+      report: Deliverables
+
+    # --- Control (cross-cutting) ---
+    - id: PRC-CTL-001
+      stage: Control
+      process: Risk management
+      pm_role: PM / Risk owner
+      input: Risk event
+      activity: Assess and respond
+      output: Risk response
+      required_data: probability, impact, exposure, owner
+      validation: exposure calculated
+      gate: "No"
+      automation: Auto-monitor triggers
+      trigger: RISK_TRIGGER_FIRED
+      alert: Threshold
+      escalation: Sponsor
+      report: Risk (PCR §06)
+
+    - id: PRC-CTL-002
+      stage: Control
+      process: Issue management
+      pm_role: PM
+      input: Issue
+      activity: Resolve and verify
+      output: Closed issue
+      required_data: actions, verification record
+      validation: VERIFIED before CLOSED
+      gate: "No"
+      automation: Escalate on overdue
+      trigger: ISSUE_OVERDUE
+      alert: Overdue
+      escalation: Sponsor
+      report: Issues (PCR §07)
+
+    - id: PRC-CTL-003
+      stage: Control
+      process: Change control
+      pm_role: PM
+      input: Change request
+      activity: Impact analysis and decision
+      output: Baseline update or rejection
+      required_data: impact on scope, schedule, cost, risk, resources, quality, procurement, benefits, stakeholders
+      validation: impact complete before approval
+      gate: "Yes"
+      automation: change_engine auto-impact
+      trigger: CHANGE_REQUEST_LOGGED
+      alert: Threshold breach
+      escalation: Governance
+      report: Change (PCR §08)
+
+    - id: PRC-CTL-004
+      stage: Control
+      process: Decision management
+      pm_role: PM / Decision owner
+      input: Decision need
+      activity: Options, impact, decide, implement
+      output: Decision record
+      required_data: decision_deadline, owner
+      validation: decision_made before deadline or escalated
+      gate: "No"
+      automation: Deadline approaching alerts
+      trigger: DECISION_DEADLINE_APPROACHING
+      alert: Due soon
+      escalation: Decision authority
+      report: Decisions (PCR §12)
+
+    - id: PRC-CTL-005
+      stage: Control
+      process: Dependency management
+      pm_role: PM
+      input: Dependency status
+      activity: Monitor and propagate delay
+      output: Updated forecast
+      required_data: source, receiving_activity, required_date, status
+      validation: propagation run on delay
+      gate: "No"
+      automation: dependency_engine cascade
+      trigger: DEPENDENCY_DELAYED
+      alert: Miss impacts milestone
+      escalation: Owner chain
+      report: Dependencies (PCR §11)
+
+    - id: PRC-CTL-006
+      stage: Control
+      process: Cost monitoring
+      pm_role: PM / Finance
+      input: Actuals and commitments
+      activity: Track EAC and variance
+      output: Cost forecast
+      required_data: actual, committed, approved_changes, pending_changes
+      validation: EAC calculation
+      gate: "No"
+      automation: cost_intelligence
+      trigger: BUDGET_VARIANCE_THRESHOLD
+      alert: EAC > budget %
+      escalation: Sponsor
+      report: Cost (PCR §09)
+
+    - id: PRC-CTL-007
+      stage: Control
+      process: Schedule intelligence
+      pm_role: PM
+      input: Schedule actuals
+      activity: CP, float, forecast completion
+      output: Early warnings
+      required_data: baseline, actual, dependencies
+      validation: float consumption rules
+      gate: "No"
+      automation: schedule_intelligence
+      trigger: FLOAT_THRESHOLD_BREACH
+      alert: "80% float consumed"
+      escalation: PM
+      report: Schedule (PCR §04)
+
+    - id: PRC-CTL-008
+      stage: Control
+      process: Quality control
+      pm_role: PM / Quality
+      input: Quality requirement
+      activity: Inspect, test, defect loop
+      output: Acceptance record
+      required_data: test results, defects
+      validation: pass/fail workflow
+      gate: "No"
+      automation: quality_engine
+      trigger: QUALITY_TEST_FAILED
+      alert: Defect rate
+      escalation: PM
+      report: Quality (PCR §10)
+
+    - id: PRC-CTL-009
+      stage: Control
+      process: PM attention queue
+      pm_role: PM
+      input: All control signals
+      activity: Prioritise CRITICAL / HIGH / WATCH
+      output: Attention queue
+      required_data: severity, urgency, impact, CP link, financial exposure, deadlines
+      validation: priority_engine rules
+      gate: "No"
+      automation: what_matters_engine continuous
+      trigger: Any control threshold
+      alert: Queue digest
+      escalation: Per item rules
+      report: Executive summary (PCR §01)
+
+    - id: PRC-CTL-010
+      stage: Control
+      process: Project control report
+      pm_role: System
+      input: Unified data model
+      activity: Generate PCR sections 01–17
+      output: PROJECT_CONTROL_REPORT
+      required_data: single graph query per section
+      validation: section completeness
+      gate: "No"
+      automation: reporting_engine on schedule or event
+      trigger: Report cadence or health change
+      alert: Generation failure
+      escalation: PMO
+      report: PCR (all sections)
+
+    # --- 10–14 Closeout ---
+    - id: PRC-CO-001
+      stage: Commissioning
+      process: Commissioning checklist
+      pm_role: PM / Technical lead
+      input: Execution outputs
+      activity: Technical completion, testing, training, ops readiness
+      output: Commissioning record
+      required_data: commissioning checklist
+      validation: critical items complete
+      gate: "No"
+      automation: Link defects and tests
+      trigger: Test complete
+      alert: Open critical defect
+      escalation: Sponsor
+      report: Commissioning
+
+    - id: PRC-CO-002
+      stage: Acceptance
+      process: Acceptance gate
+      pm_role: PM / Business
+      input: Deliverables + criteria
+      activity: ACCEPT / REJECT / REMEDIATE
+      output: Acceptance record
+      required_data: acceptance checks.*
+      validation: criteria met
+      gate: "Yes"
+      automation: Checklist enforcement
+      trigger: Delivery
+      alert: Failed test
+      escalation: Sponsor
+      report: Acceptance
+
+    - id: PRC-CO-003
+      stage: Handover
+      process: Transition
+      pm_role: PM / Operations
+      input: Accepted deliverables
+      activity: Ops, support, docs, assets, SLA
+      output: TRANSITION_COMPLETE
+      required_data: handover checklist
+      validation: ownership transferred
+      gate: "No"
+      automation: Outstanding items log
+      trigger: Handover milestone
+      alert: Missing SLA
+      escalation: Business owner
+      report: Handover
+
+    - id: PRC-CO-004
+      stage: Closure
+      process: Close project
+      pm_role: PM / Sponsor
+      input: Handover complete
+      activity: Closure checklist and sponsor sign-off
+      output: CLOSED status
+      required_data: closure checklist.*
+      validation: sponsor_approval_obtained
+      gate: "Yes"
+      automation: Set project_status CLOSED; archive
+      trigger: Handover complete
+      alert: Open contract
+      escalation: Sponsor
+      report: Final report
+
+    - id: PRC-CO-005
+      stage: Benefits Realisation
+      process: Track benefits
+      pm_role: Benefits owner
+      input: Business case benefits
+      activity: Measure actual vs target
+      output: Realisation status
+      required_data: benefit, baseline, target, actual, measurement_method
+      validation: variance explained
+      gate: "No"
+      automation: Realisation %; prompt "why 82%?"
+      trigger: Measurement period
+      alert: Under-realisation
+      escalation: Sponsor
+      report: Benefits
+
+    # --- Platform ---
+    - id: PRC-PLT-001
+      stage: Platform
+      process: Stage advancement
+      pm_role: System
+      input: Stage completion signals
+      activity: can_advance evaluation
+      output: Allow or block transition
+      required_data: entry/exit, artifacts, approvals, validations
+      validation: advancement.yaml rules
+      gate: "Yes"
+      automation: advancement service
+      trigger: Advance request
+      alert: Block reason list
+      escalation: Override workflow
+      report: Audit
+
+    - id: PRC-PLT-002
+      stage: Platform
+      process: Authorised override
+      pm_role: Executive
+      input: Blocked gate
+      activity: Override with reason and impact
+      output: Audit + allowed transition
+      required_data: reason, impact, authority, approval
+      validation: never_silent
+      gate: "Yes"
+      automation: OVERRIDE_APPROVED event
+      trigger: Override request
+      alert: Compliance review
+      escalation: Audit committee
+      report: Audit trail
+
+    - id: PRC-PLT-003
+      stage: Platform
+      process: Event propagation
+      pm_role: System
+      input: Domain event
+      activity: Multi-engine update
+      output: Updated forecasts and actions
+      required_data: event_catalog mapping
+      validation: idempotent handlers
+      gate: "No"
+      automation: event bus + handlers
+      trigger: e.g. VENDOR_MISSED_DELIVERY
+      alert: PM action created
+      escalation: Per severity
+      report: PCR refresh

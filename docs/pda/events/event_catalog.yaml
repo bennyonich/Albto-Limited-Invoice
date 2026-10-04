@@ -1,0 +1,54 @@
+# Event-driven automation — one event propagates across domains.
+
+event_catalog:
+  principle: "Stage-driven UI; execution behaviour is event-driven."
+
+  example:
+    event_type: VENDOR_MISSED_DELIVERY
+    propagation:
+      - detect_event
+      - find_affected_activities
+      - evaluate_dependencies
+      - evaluate_critical_path
+      - evaluate_milestones
+      - evaluate_cost
+      - evaluate_risks
+      - recalculate_forecast
+      - determine_severity
+      - create_or_update_issue
+      - create_or_update_risk
+      - notify_owner
+      - create_pm_action
+      - escalate_if_threshold_exceeded
+      - update_project_health
+      - refresh_executive_report_sections
+
+  event_types:
+    - id: ACTIVITY_PROGRESS_UPDATED
+      triggers: [schedule_intelligence, forecast_engine]
+    - id: ACTIVITY_SLIPPAGE
+      triggers: [schedule_intelligence, priority_engine, early_warning]
+    - id: FLOAT_THRESHOLD_BREACH
+      alerts: [PM, optional SPONSOR]
+    - id: COST_COMMITMENT_ADDED
+      triggers: [cost_intelligence, forecast_engine]
+    - id: BUDGET_VARIANCE_THRESHOLD
+      triggers: [priority_engine, escalation]
+    - id: RISK_TRIGGER_FIRED
+      triggers: [risk_engine, impact_engine]
+    - id: ISSUE_OVERDUE
+      triggers: [issue_engine, escalation]
+    - id: CHANGE_REQUEST_LOGGED
+      triggers: [change_engine, impact_assessment]
+    - id: DECISION_DEADLINE_APPROACHING
+      triggers: [decision_engine, priority_engine]
+    - id: DEPENDENCY_DELAYED
+      triggers: [dependency_engine, schedule_intelligence, forecast_engine]
+    - id: QUALITY_TEST_FAILED
+      triggers: [quality_engine, issue_engine]
+    - id: REQUIREMENT_CHANGED
+      triggers: [scope_validation_checks, traceability_audit]
+    - id: GATE_DECISION_RECORDED
+      triggers: [advancement_service, audit_trail]
+    - id: OVERRIDE_APPROVED
+      triggers: [advancement_service, audit_trail, priority_engine]

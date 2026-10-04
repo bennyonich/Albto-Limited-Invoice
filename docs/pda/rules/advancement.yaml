@@ -1,0 +1,48 @@
+# No-skipping engine + authorised override — implement as single policy service.
+
+advancement:
+  principle: NO_GATE_NO_PROGRESSION
+
+  can_advance:
+    description: |
+      def can_advance(project, current_stage, next_stage):
+          if not entry_conditions_met(project, next_stage):
+              return False
+          if not mandatory_artifacts_complete(project, current_stage):
+              return False
+          if not validation_rules_pass(project, current_stage):
+              return False
+          if required_approvals_missing(project, current_stage):
+              return False
+          if unresolved_blocking_items_exist(project):
+              return False
+          return True
+
+  blocking_items:
+    - open_gate_failure_without_override
+    - scope_validation_failures
+    - execution_readiness NOT_READY without override
+    - mandatory_artifact_missing
+    - required_approval_pending
+
+  authorised_override:
+    never_silent: true
+    flow:
+      - OVERRIDE_REQUEST
+      - REASON
+      - IMPACT
+      - AUTHORITY
+      - APPROVAL
+      - AUDIT_TRAIL
+    audit_required_fields:
+      - who
+      - what
+      - when
+      - before
+      - after
+      - why
+      - approval
+
+  normal_path:
+    pass: NEXT_STAGE
+    fail: REMEDIATION

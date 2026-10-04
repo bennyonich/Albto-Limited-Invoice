@@ -1,0 +1,60 @@
+# Canonical entity graph — single source for ORM / graph queries / reports.
+
+data_relationships:
+  root: BUSINESS_CASE
+
+  graph:
+    BUSINESS_CASE:
+      children:
+        OBJECTIVES:
+          children:
+            BENEFITS: {}
+        PROJECT:
+          children:
+            CHARTER: {}
+            REQUIREMENTS:
+              children:
+                DELIVERABLES:
+                  children:
+                    WBS:
+                      children:
+                        WORK_PACKAGES:
+                          children:
+                            ACTIVITIES: {}
+            SCHEDULE: {}
+            MILESTONES: {}
+            RESOURCES: {}
+            COST: {}
+            PROCUREMENT: {}
+            QUALITY: {}
+            RISKS: {}
+            ISSUES: {}
+            CHANGES: {}
+            DECISIONS: {}
+            DEPENDENCIES: {}
+            STAKEHOLDERS: {}
+            COMMUNICATIONS: {}
+
+  traceability_chain:
+    - Requirement
+    - Deliverable
+    - Work Package
+    - Activity
+    - Acceptance Criteria
+
+  baselines:
+    - BUSINESS_CASE_BASELINE
+    - CHARTER_BASELINE
+    - SCOPE_BASELINE
+    - PROJECT_BASELINE  # schedule + cost + scope after plan approval
+
+  ultimate_workflow_logic:
+    - WHY → BUSINESS_CASE
+    - WHAT → CHARTER
+    - WHAT_EXACTLY → REQUIREMENTS
+    - WHATS_IN → SCOPE
+    - HOW_WHEN_WHO → PLAN
+    - READY → MOBILISATION
+    - EXECUTE → actuals + events + changes
+    - ANALYSE → control pipeline
+    - COMMISSION_ACCEPT → HANDOVER → CLOSE → BENEFITS

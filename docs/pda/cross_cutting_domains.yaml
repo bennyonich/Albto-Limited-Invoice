@@ -1,0 +1,153 @@
+# Domains that operate throughout the lifecycle — not sequential stages.
+
+cross_cutting_domains:
+  principle: "Active from AUTHORISED through CLOSURE (and benefits where relevant); event-driven updates."
+
+  domains:
+    - id: RISK
+      engine: risk_engine
+      lifecycle_states: [open, mitigating, triggered, closed]
+      required_fields:
+        - id
+        - description
+        - cause
+        - event
+        - consequence
+        - probability
+        - impact
+        - exposure
+        - owner
+        - mitigation
+        - contingency
+        - trigger
+        - due_date
+        - affected_scope
+        - affected_schedule
+        - affected_cost
+        - affected_quality
+        - affected_deliverables
+        - affected_milestones
+        - status
+      continuous_question: "Has anything changed that affects this risk?"
+
+    - id: ISSUE
+      engine: issue_engine
+      lifecycle:
+        - IDENTIFIED
+        - ASSESSED
+        - ASSIGNED
+        - ACTION_IN_PROGRESS
+        - RESOLVED
+        - VERIFIED
+        - CLOSED
+      rule: "RESOLVED ≠ CLOSED; verification required before close."
+
+    - id: CHANGE
+      engine: change_engine
+      lifecycle:
+        - REQUESTED
+        - LOGGED
+        - IMPACT_ASSESSMENT
+        - PM_REVIEW
+        - APPROVAL_AUTHORITY
+        - APPROVED | REJECTED | DEFERRED
+        - BASELINE_UPDATE
+        - IMPLEMENTED
+        - VERIFIED
+        - CLOSED
+      impact_dimensions:
+        - scope
+        - schedule
+        - cost
+        - risk
+        - resources
+        - quality
+        - procurement
+        - benefits
+        - stakeholders
+
+    - id: DECISION
+      engine: decision_engine
+      lifecycle:
+        - DECISION_REQUIRED
+        - OPTIONS_IDENTIFIED
+        - IMPACT_ASSESSED
+        - DECISION_OWNER_IDENTIFIED
+        - DECISION_DEADLINE
+        - DECISION_MADE
+        - ACTION_ASSIGNED
+        - DECISION_IMPLEMENTED
+      automation: flag_decisions_approaching_deadline
+
+    - id: DEPENDENCY
+      engine: dependency_engine
+      fields:
+        - dependency
+        - source
+        - receiving_activity
+        - owner
+        - required_date
+        - current_status
+        - impact_if_missed
+        - escalation_threshold
+      propagation: "delay A → activity B → milestone C → completion forecast"
+
+    - id: COST
+      engine: cost_intelligence
+      monitors:
+        - approved_budget
+        - current_budget
+        - actual_cost
+        - committed_cost
+        - forecast_remaining
+        - estimate_at_completion
+        - variance
+        - approved_changes
+        - pending_changes
+        - cost_exposure
+
+    - id: SCHEDULE
+      engine: schedule_intelligence
+      calculates:
+        - baseline
+        - actual
+        - variance
+        - forecast
+        - critical_path
+        - near_critical_path
+        - float
+        - slippage
+        - milestone_impact
+        - completion_forecast
+      early_warning_example: "Activity X has consumed 80% of available float."
+
+    - id: QUALITY
+      engine: quality_engine
+      lifecycle:
+        - QUALITY_REQUIREMENT
+        - INSPECTION
+        - TEST
+        - PASS | FAIL
+        - DEFECT
+        - CORRECTIVE_ACTION
+        - RETEST
+        - ACCEPTANCE
+
+    - id: STAKEHOLDER
+      engine: stakeholder_engine
+      ties_to: communications_plan
+
+    - id: COMMUNICATIONS
+      engine: communications_engine
+      ties_to: reporting_engine
+
+  control_pipeline:
+    - ACTUAL
+    - EVENT
+    - UPDATE
+    - CONTROL_ENGINE
+    - engines: [SCHEDULE, COST, RISK, ISSUE, CHANGE]
+    - IMPACT_ENGINE
+    - FORECAST_ENGINE
+    - PRIORITY_ENGINE
+    - outputs: [PM_ACTION, ESCALATION, PROJECT_HEALTH, EXECUTIVE_REPORT]

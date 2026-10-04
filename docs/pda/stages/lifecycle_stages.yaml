@@ -1,0 +1,389 @@
+# Every stage: entry → inputs → activities → outputs → exit (+ approval/validation/escalation where applicable)
+
+stage_template:
+  fields:
+    - entry_conditions
+    - required_inputs
+    - activities
+    - required_outputs
+    - exit_conditions
+    - approval
+    - validation
+    - escalation
+    - mandatory_artifacts
+    - mandatory_approvals
+    - validation_rules
+
+stages:
+  PROJECT_INTAKE:
+    objective: "Determine whether an idea/request should become a formal project."
+    entry_conditions:
+      - authenticated_requester
+    required_inputs:
+      project_name: required
+      problem_statement: required
+      business_need: required
+      requesting_unit: required
+      proposed_sponsor: required
+      strategic_objective: required
+      desired_outcome: required
+      urgency: required
+      initial_estimate: required
+      target_date: required
+    activities:
+      - capture_request
+      - classify_as_project_or_not
+      - check_duplicate_initiative
+      - assess_strategic_alignment
+      - record_intake_decision_inputs
+    required_outputs:
+      - artifact: PROJECT_CONCEPT_RECORD
+    exit_conditions:
+      - all_required_inputs_present
+      - system_checks_passed
+    validation:
+      - id: problem_clearly_defined
+      - id: business_need_documented
+      - id: sponsor_identifiable
+      - id: strategic_alignment_stated
+      - id: not_duplicate_or_duplicate_linked
+      - id: request_classified
+    gate:
+      id: PROJECT_INTAKE_GATE
+      decisions: [ACCEPT, REJECT, RETURN_FOR_CLARIFICATION, HOLD]
+
+  BUSINESS_CASE:
+    objective: "Build the investment case from intake; options, benefits, costs, risks."
+    entry_conditions:
+      - prior_stage: PROJECT_INTAKE
+      - intake_decision: ACCEPT
+    required_inputs:
+      inherits_from: PROJECT_INTAKE
+    activities:
+      - populate_from_intake
+      - document_problem_and_opportunity
+      - define_options_and_recommendation
+      - quantify_benefits_and_costs
+      - identify_funding_source
+      - document_timeline_resources_risks_constraints_dependencies
+      - define_success_criteria_and_benefits_owner
+    mandatory_components:
+      - problem
+      - opportunity
+      - strategic_alignment
+      - options_considered
+      - recommended_option
+      - expected_benefits
+      - costs
+      - timeline
+      - resources
+      - risks
+      - constraints
+      - dependencies
+      - financial_case
+      - non_financial_case
+      - success_criteria
+      - benefits_owner
+    required_outputs:
+      - artifact: BUSINESS_CASE
+    exit_conditions:
+      - automated_checks_passed
+    validation:
+      - id: business_need_exists
+      - id: benefits_identified
+      - id: benefits_measurable_where_possible
+      - id: costs_estimated
+      - id: funding_source_identified
+      - id: options_considered
+      - id: major_risks_identified
+      - id: strategic_alignment_established
+
+  BUSINESS_CASE_GATE:
+    type: gate
+    gate_id: BUSINESS_CASE_APPROVAL
+    required_before_decision:
+      - business_case_complete
+      - sponsor_identified
+      - benefits_defined
+      - preliminary_cost_defined
+      - preliminary_schedule_defined
+      - major_risks_identified
+    decisions: [APPROVE, REWORK, HOLD, REJECT]
+    on_decision:
+      REWORK: return_to BUSINESS_CASE
+      APPROVE: continue_to PROJECT_CHARTER
+
+  PROJECT_CHARTER:
+    objective: "Authorise scope of authority; inherit approved business case; establish baselines."
+    entry_conditions:
+      - gate BUSINESS_CASE_APPROVAL: APPROVE
+    required_inputs:
+      inherits_from: BUSINESS_CASE
+      additional:
+        - sponsor
+        - project_manager
+        - business_owner
+        - governance
+        - decision_authority
+        - reporting_requirements
+    activities:
+      - inherit_business_case_fields
+      - define_purpose_objectives_scope_deliverables
+      - set_budget_milestones_assumptions_constraints
+      - record_major_risks_and_dependencies
+      - compare_and_flag_material_differences_from_business_case
+    required_outputs:
+      - artifact: PROJECT_CHARTER
+      - baseline: CHARTER_BASELINE
+      - reference: BUSINESS_CASE_BASELINE
+    exit_conditions:
+      - charter_complete
+      - material_variance_flags_acknowledged_or_resolved
+    validation:
+      - id: sponsor_pm_business_owner_assigned
+      - id: objectives_and_success_criteria_aligned_to_bc
+
+  PROJECT_AUTHORIZATION:
+    type: gate
+    gate_id: PROJECT_AUTHORISATION
+    required_before_decision:
+      - sponsor_confirmed
+      - pm_appointed
+      - business_owner_confirmed
+      - budget_authorised
+      - governance_established
+      - project_objectives_approved
+      - charter_approved
+    on_decision:
+      APPROVE:
+        sets_project_status: AUTHORISED
+        continue_to: DISCOVERY_REQUIREMENTS
+
+  DISCOVERY_REQUIREMENTS:
+    objective: "Build requirements intelligence and traceability foundation."
+    entry_conditions:
+      - project_status: AUTHORISED
+    requirement_categories:
+      - business
+      - functional
+      - technical
+      - operational
+      - regulatory
+      - security
+      - compliance
+      - customer
+      - quality
+      - performance
+      - integration
+      - data
+      - acceptance
+    activities:
+      - elicit_and_document_requirements
+      - assign_requirement_ids  # REQ-001, REQ-002, ...
+      - establish_trace_links  # requirement → deliverable → work_package → activity → acceptance_criteria
+    required_outputs:
+      - artifact: REQUIREMENTS_REGISTER
+    exit_conditions:
+      - requirements_baslined_for_scope
+
+  SCOPE_DEFINITION:
+    objective: "Define scope baseline, deliverables, WBS, acceptance criteria."
+    entry_conditions:
+      - requirements_register_exists
+    activities:
+      - define_in_scope_out_of_scope
+      - record_assumptions_constraints_dependencies_interfaces
+      - define_deliverables_and_acceptance_criteria
+      - generate_wbs
+    required_outputs:
+      - artifact: SCOPE_BASELINE
+      - artifact: WBS
+    exit_conditions:
+      - scope_baseline_complete
+
+  SCOPE_VALIDATION:
+    type: gate
+    gate_id: SCOPE_VALIDATION
+    checks:
+      - requirements_complete
+      - deliverables_defined
+      - acceptance_criteria_defined
+      - exclusions_defined
+      - dependencies_identified
+      - assumptions_recorded
+      - stakeholders_reviewed
+      - scope_approved
+    on_fail:
+      action: DO_NOT_PROCEED
+      behaviour: list_missing_items_for_pm
+    on_pass:
+      continue_to: INTEGRATED_PLANNING
+
+  INTEGRATED_PLANNING:
+    objective: "Produce integrated project management plan (schedule, cost, resources, risk, quality, comms, change, procurement)."
+    entry_conditions:
+      - scope_validated
+    plan_components:
+      schedule: [activities, durations, dependencies, resources, milestones, critical_path, float, baseline_dates]
+      cost: [budget, estimates, resource_cost, procurement_cost, contingency, cash_flow]
+      resources: [people, equipment, facilities, specialists, vendors]
+      procurement: [packages, suppliers, lead_times, contracts, delivery_dates]
+      risk: [register, owners, mitigations, triggers]
+      quality: [standards, inspection, testing, acceptance]
+      communications: [stakeholders, reports, meetings, frequency, recipients]
+      change_management: [process, approval_authority, thresholds]
+    required_outputs:
+      - artifact: PROJECT_MANAGEMENT_PLAN
+
+  PLAN_APPROVAL:
+    type: gate
+    gate_id: PLAN_APPROVAL
+    checks:
+      - scope_approved
+      - wbs_complete
+      - schedule_complete
+      - critical_path_identified
+      - budget_approved
+      - resources_identified
+      - procurement_plan_complete
+      - risk_plan_complete
+      - quality_plan_complete
+      - communication_plan_complete
+      - change_process_established
+      - governance_established
+    on_decision:
+      APPROVE_PLAN:
+        creates: PROJECT_BASELINE
+        continue_to: MOBILIZATION
+
+  MOBILIZATION:
+    objective: "Confirm operational readiness before execution."
+    readiness_checklist:
+      - funding_available
+      - resources_available
+      - site_available
+      - design_available
+      - requirements_approved
+      - vendors_appointed
+      - contracts_executed
+      - materials_available
+      - permits_obtained
+      - technology_available
+      - security_arrangements_complete
+      - governance_operational
+      - reporting_operational
+      - risk_responses_prepared
+      - stakeholders_mobilised
+    required_outputs:
+      - artifact: MOBILISATION_RECORD
+
+  EXECUTION_READINESS:
+    type: gate
+    gate_id: EXECUTION_READINESS
+    calculates: PROJECT_READINESS_SCORE
+    dimensions: [scope, budget, resources, procurement, design, risk, governance]
+    outcomes: [READY, NOT_READY]
+    override:
+      allowed: true
+      requires: authorised_override_with_audit
+
+  EXECUTION:
+    objective: "Deliver work; feed control engine from actuals and events."
+    monitors:
+      - tasks
+      - deliverables
+      - milestones
+      - resources
+      - cost
+      - procurement
+      - quality
+      - issues
+      - risks
+      - dependencies
+      - changes
+      - decisions
+      - stakeholders
+
+  MONITORING_CONTROL:
+    objective: "Aggregate health, forecasts, and PM attention queue during execution."
+    runs_parallel_with: EXECUTION
+    feeds: [control_engine, impact_engine, forecast_engine, priority_engine]
+
+  COMMISSIONING:
+    objective: "Verify technical and operational readiness before acceptance."
+    checklist:
+      - technical_completion
+      - testing
+      - defects
+      - documentation
+      - training
+      - operational_readiness
+      - security
+      - safety
+      - licences
+      - warranties
+      - assets
+      - support
+      - user_acceptance
+
+  ACCEPTANCE:
+    type: gate_stage
+    checks:
+      - contractual_deliverables_complete
+      - acceptance_criteria_met
+      - outstanding_defects_within_tolerance
+      - documentation_complete
+      - user_acceptance_complete
+      - technical_acceptance_complete
+      - business_acceptance_complete
+    decisions: [ACCEPT, REJECT, REMEDIATE]
+
+  HANDOVER:
+    objective: "Transition to operations with complete ownership and support model."
+    includes:
+      - operations
+      - support
+      - documentation
+      - assets
+      - contracts
+      - warranties
+      - training
+      - knowledge_transfer
+      - support_model
+      - sla
+      - ownership
+      - outstanding_items
+    required_outputs:
+      - status: TRANSITION_COMPLETE
+
+  CLOSURE:
+    objective: "Formal close; release resources; archive; lessons learned."
+    checklist:
+      - deliverables_accepted
+      - contracts_closed
+      - financials_reconciled
+      - assets_transferred
+      - documents_archived
+      - lessons_learned_captured
+      - outstanding_issues_transferred
+      - resources_released
+      - benefits_owner_confirmed
+      - final_report_approved
+      - sponsor_approval_obtained
+    on_complete:
+      sets_project_status: CLOSED
+
+  BENEFITS_REALIZATION:
+    objective: "Track realised value vs business case after closure."
+    entry_conditions:
+      - project_status: CLOSED
+    tracks:
+      - benefit
+      - baseline
+      - target
+      - owner
+      - measurement_method
+      - target_date
+      - actual
+      - variance
+      - realisation_status

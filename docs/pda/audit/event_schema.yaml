@@ -1,0 +1,26 @@
+audit_trail:
+  immutable: true
+  required_fields:
+    who: user_id
+    what: action_type
+    when: timestamp_utc
+    before: json_snapshot_optional
+    after: json_snapshot_optional
+    why: text_required_for_material_changes
+    approval: approval_record_id_optional
+  relations:
+    - project_id
+    - stage_id
+    - related_risk_id
+    - related_issue_id
+    - related_change_id
+    - related_decision_id
+  example:
+    date: "2026-10-05"
+    actor_role: Project Manager
+    action: forecast_completion_changed
+    before: "2026-11-15"
+    after: "2026-11-22"
+    reason: "UPS delivery delay"
+    related_risk: R-023
+    related_issue: I-041

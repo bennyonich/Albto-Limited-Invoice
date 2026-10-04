@@ -1,0 +1,55 @@
+control_pipeline:
+  name: Cross-cutting control engine
+  active_during: [EXECUTION, MONITORING_CONTROL, COMMISSIONING]
+
+  flow:
+    - step: ingest
+      sources: [ACTUAL, EVENT, UPDATE]
+    - step: control_engine
+      sub_engines: [SCHEDULE, COST, RISK, ISSUE, CHANGE]
+    - step: impact_engine
+    - step: forecast_engine
+    - step: priority_engine
+    - step: outputs
+      targets: [PM_ACTION, ESCALATION, PROJECT_HEALTH, EXECUTIVE_REPORT]
+
+what_matters_engine:
+  name: PM Attention Queue
+  evaluates:
+    - severity
+    - urgency
+    - impact
+    - probability
+    - critical_path_relationship
+    - financial_exposure
+    - decision_deadline
+    - stakeholder_impact
+    - benefit_impact
+    - regulatory_impact
+  queues:
+    - CRITICAL
+    - HIGH
+    - WATCH
+    - ON_TRACK
+
+reporting_engine:
+  report_id: PROJECT_CONTROL_REPORT
+  sections:
+    - executive_summary
+    - project_health
+    - progress
+    - schedule
+    - milestones
+    - risks_impact_intelligence
+    - issues_resolution
+    - changes
+    - cost
+    - deliverables_quality
+    - dependencies
+    - decisions
+    - actions
+    - stakeholders
+    - procurement_vendors
+    - forward_look
+    - escalations
+  principle: "All sections generated from the same data model."

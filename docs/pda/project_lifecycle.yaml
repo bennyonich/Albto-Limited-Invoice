@@ -1,0 +1,198 @@
+# Master project lifecycle — sequential stages and gates.
+# Cross-cutting domains (risk, issue, change, etc.) are defined separately and apply at all stages.
+
+project_lifecycle:
+  version: "1.0.0"
+  principle: "NO GATE → NO PROGRESSION"
+
+  stages:
+    - id: PROJECT_INTAKE
+      name: "Project Intake"
+      sequence: 1
+      type: stage
+
+    - id: BUSINESS_CASE
+      name: "Business Case"
+      sequence: 2
+      type: stage
+
+    - id: BUSINESS_CASE_GATE
+      name: "Business Case Approval"
+      sequence: 3
+      type: gate
+      gate_id: BUSINESS_CASE_APPROVAL
+
+    - id: PROJECT_CHARTER
+      name: "Project Charter"
+      sequence: 4
+      type: stage
+
+    - id: PROJECT_AUTHORIZATION
+      name: "Project Authorization"
+      sequence: 5
+      type: gate
+      gate_id: PROJECT_AUTHORISATION
+
+    - id: DISCOVERY_REQUIREMENTS
+      name: "Discovery & Requirements"
+      sequence: 6
+      type: stage
+
+    - id: SCOPE_DEFINITION
+      name: "Scope Definition"
+      sequence: 7
+      type: stage
+
+    - id: SCOPE_VALIDATION
+      name: "Scope Validation"
+      sequence: 8
+      type: gate
+      gate_id: SCOPE_VALIDATION
+
+    - id: INTEGRATED_PLANNING
+      name: "Integrated Project Planning"
+      sequence: 9
+      type: stage
+
+    - id: PLAN_APPROVAL
+      name: "Project Plan Approval"
+      sequence: 10
+      type: gate
+      gate_id: PLAN_APPROVAL
+
+    - id: MOBILIZATION
+      name: "Project Mobilization"
+      sequence: 11
+      type: stage
+
+    - id: EXECUTION_READINESS
+      name: "Execution Readiness"
+      sequence: 12
+      type: gate
+      gate_id: EXECUTION_READINESS
+
+    - id: EXECUTION
+      name: "Project Execution"
+      sequence: 13
+      type: stage
+
+    - id: MONITORING_CONTROL
+      name: "Monitoring & Control"
+      sequence: 14
+      type: stage
+      note: "Runs in parallel with EXECUTION; listed for reporting and health aggregation."
+
+    - id: COMMISSIONING
+      name: "Commissioning"
+      sequence: 15
+      type: stage
+
+    - id: ACCEPTANCE
+      name: "Acceptance"
+      sequence: 16
+      type: stage
+
+    - id: HANDOVER
+      name: "Transition & Handover"
+      sequence: 17
+      type: stage
+
+    - id: CLOSURE
+      name: "Project Closure"
+      sequence: 18
+      type: stage
+
+    - id: BENEFITS_REALIZATION
+      name: "Benefits Realisation"
+      sequence: 19
+      type: stage
+      note: "Deliberately after CLOSURE; tracks value against business case."
+
+  transitions:
+    - from: PROJECT_INTAKE
+      to: BUSINESS_CASE
+      when: gate_decision_in [ACCEPT]
+
+    - from: PROJECT_INTAKE
+      to: PROJECT_INTAKE
+      when: gate_decision_in [RETURN_FOR_CLARIFICATION, HOLD]
+
+    - from: PROJECT_INTAKE
+      terminal: true
+      when: gate_decision_in [REJECT]
+
+    - from: BUSINESS_CASE
+      to: BUSINESS_CASE_GATE
+
+    - from: BUSINESS_CASE_GATE
+      to: PROJECT_CHARTER
+      when: decision APPROVE
+
+    - from: BUSINESS_CASE_GATE
+      to: BUSINESS_CASE
+      when: decision REWORK
+
+    - from: PROJECT_CHARTER
+      to: PROJECT_AUTHORIZATION
+
+    - from: PROJECT_AUTHORIZATION
+      to: DISCOVERY_REQUIREMENTS
+      when: authorised
+      sets_project_status: AUTHORISED
+
+    - from: DISCOVERY_REQUIREMENTS
+      to: SCOPE_DEFINITION
+
+    - from: SCOPE_DEFINITION
+      to: SCOPE_VALIDATION
+
+    - from: SCOPE_VALIDATION
+      to: INTEGRATED_PLANNING
+      when: scope_approved
+
+    - from: INTEGRATED_PLANNING
+      to: PLAN_APPROVAL
+
+    - from: PLAN_APPROVAL
+      to: MOBILIZATION
+      when: decision APPROVE_PLAN
+      creates: PROJECT_BASELINE
+
+    - from: MOBILIZATION
+      to: EXECUTION_READINESS
+
+    - from: EXECUTION_READINESS
+      to: EXECUTION
+      when: readiness READY
+
+    - from: EXECUTION
+      to: COMMISSIONING
+      when: execution_complete_criteria_met
+
+    - from: COMMISSIONING
+      to: ACCEPTANCE
+
+    - from: ACCEPTANCE
+      to: HANDOVER
+      when: decision ACCEPT
+
+    - from: HANDOVER
+      to: CLOSURE
+      when: transition_complete
+
+    - from: CLOSURE
+      to: BENEFITS_REALIZATION
+      when: project_status CLOSED
+
+  project_status_values:
+    - DRAFT
+    - INTAKE
+    - BUSINESS_CASE
+    - AUTHORISED
+    - PLANNING
+    - BASELINED
+    - EXECUTING
+    - COMMISSIONING
+    - CLOSING
+    - CLOSED
+    - BENEFITS_TRACKING
