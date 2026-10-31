@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Instant life and general insurance for Nigerians — motor, home, health, term life, and family protection. Quote in minutes, bind same day.">
+    <meta name="theme-color" content="#059669">
+    <title>CoverStack NG — Insurance at the Speed of Now</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'system-ui', 'sans-serif'],
+                        serif: ['Instrument Serif', 'Georgia', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0',
+                            500: '#10b981', 600: '#059669', 700: '#047857',
+                            900: '#064e3b',
+                        },
+                        slate: { 850: '#172033', 950: '#0b1220' },
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'DM Sans', system-ui, sans-serif; }
+
+        .fade-in { animation: fadeIn 0.45s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-lift { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .card-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -16px rgba(5, 150, 105, 0.18); }
+
+        .btn-press:active { transform: scale(0.97); }
+        .btn-press { transition: transform 0.12s ease; }
+
+        .step-dot.active { background: #059669; transform: scale(1.15); }
+        .step-dot.done { background: #10b981; }
+
+        .gradient-hero {
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(16, 185, 129, 0.15), transparent),
+                        radial-gradient(ellipse 50% 40% at 90% 20%, rgba(245, 158, 11, 0.08), transparent),
+                        linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+        }
+
+        .glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); }
+
+        .toggle-module.selected { border-color: #059669; background: #ecfdf5; }
+        .toggle-module.selected .check-icon { opacity: 1; transform: scale(1); }
+
+        .pb-safe { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+<div id="app" class="min-h-screen">
+
+    <!-- Header -->
+    <header id="site-header" class="sticky top-0 z-50 glass border-b border-slate-200/70">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <button type="button" data-action="navigate" data-view="landing" class="flex items-center gap-2.5 group">
+                <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-600/25">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-white" aria-hidden="true"></i>
+                </div>
+                <div class="text-left">
+                    <span class="font-bold text-slate-900 tracking-tight">CoverStack</span>
+                    <span class="text-brand-600 font-bold tracking-tight"> NG</span>
+                </div>
+            </button>
+            <nav class="hidden md:flex items-center gap-1" aria-label="Main">
+                <button type="button" data-action="navigate" data-view="products" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-brand-600 rounded-lg hover:bg-brand-50 transition-colors">Products</button>
+                <button type="button" data-action="navigate" data-view="packages" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-brand-600 rounded-lg hover:bg-brand-50 transition-colors">Packages</button>
+                <button type="button" data-action="navigate" data-view="dashboard" class="px-3 py-2 text-sm font-medium text-slate-600 hover:text-brand-600 rounded-lg hover:bg-brand-50 transition-colors">My Policies</button>
+            </nav>
+            <div class="flex items-center gap-2">
+                <button type="button" data-action="navigate" data-view="dashboard" class="md:hidden p-2 rounded-lg hover:bg-slate-100" aria-label="My policies">
+                    <i data-lucide="folder-open" class="w-5 h-5 text-slate-600" aria-hidden="true"></i>
+                </button>
+                <button type="button" data-action="start-quote" class="btn-press bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-brand-600/20 transition-colors">
+                    Get a Quote
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" role="main" tabindex="-1"></main>
+
+    <!-- Mobile bottom nav -->
+    <nav id="mobile-nav" class="md:hidden fixed bottom-0 inset-x-0 z-50 glass border-t border-slate-200/70 hidden" aria-label="Mobile navigation">
+        <div class="flex justify-around py-2 px-2">
+            <button type="button" data-action="navigate" data-view="landing" class="nav-mobile flex flex-col items-center gap-0.5 p-2 rounded-xl text-brand-600 min-w-[64px]">
+                <i data-lucide="home" class="w-5 h-5" aria-hidden="true"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </button>
+            <button type="button" data-action="navigate" data-view="products" class="nav-mobile flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 min-w-[64px]">
+                <i data-lucide="layers" class="w-5 h-5" aria-hidden="true"></i>
+                <span class="text-[10px] font-medium">Products</span>
+            </button>
+            <button type="button" data-action="start-quote" class="flex flex-col items-center -mt-4 min-w-[64px]">
+                <div class="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-600/30">
+                    <i data-lucide="plus" class="w-6 h-6 text-white" aria-hidden="true"></i>
+                </div>
+                <span class="text-[10px] font-medium text-brand-600 mt-1">Quote</span>
+            </button>
+            <button type="button" data-action="navigate" data-view="claims" class="nav-mobile flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 min-w-[64px]">
+                <i data-lucide="file-text" class="w-5 h-5" aria-hidden="true"></i>
+                <span class="text-[10px] font-medium">Claims</span>
+            </button>
+            <button type="button" data-action="navigate" data-view="dashboard" class="nav-mobile flex flex-col items-center gap-0.5 p-2 rounded-xl text-slate-400 min-w-[64px]">
+                <i data-lucide="user" class="w-5 h-5" aria-hidden="true"></i>
+                <span class="text-[10px] font-medium">Account</span>
+            </button>
+        </div>
+        <div class="pb-safe"></div>
+    </nav>
+
+    <div id="toast" class="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[70] hidden" role="status" aria-live="polite">
+        <div class="bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-sm font-medium flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-brand-500" aria-hidden="true"></i>
+            <span id="toast-msg">Done</span>
+        </div>
+    </div>
+</div>
+
+<script>
+const NIGERIAN_STATES = [
+    'Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno',
+    'Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','FCT','Gombe','Imo',
+    'Jigawa','Kaduna','Kano','Katsina','Kebbi','Kogi','Kwara','Lagos','Nasarawa',
+    'Niger','Ogun','Ondo','Osun','Oyo','Plateau','Rivers','Sokoto','Taraba',
+    'Yobe','Zamfara'
+];
+
+const LIFE_PRODUCTS = [
+    { id: 'term-life', name: 'Term Life Cover', icon: 'heart-handshake', desc: 'Affordable death benefit for a fixed term. Protect your family from ₦5M–₦50M.', from: 2500, unit: 'month', category: 'life' },
+    { id: 'family-shield', name: 'Family Protection Plan', icon: 'users', desc: 'Cover for you, spouse, and up to 4 children with critical illness rider.', from: 8500, unit: 'month', category: 'life' },
+    { id: 'wealth-builder', name: 'Wealth Builder (Savings + Life)', icon: 'trending-up', desc: 'Build cash value while securing life cover. Ideal for long-term goals.', from: 25000, unit: 'month', category: 'life' },
+    { id: 'education-plan', name: 'Child Education Plan', icon: 'graduation-cap', desc: 'Guaranteed payouts for school fees if anything happens to you.', from: 12000, unit: 'month', category: 'life' },
+    { id: 'group-life', name: 'Group Life (SME)', icon: 'building-2', desc: 'Employee death-in-service cover. NAICOM-compliant for businesses.', from: 3500, unit: 'employee/mo', category: 'life' },
+];
+
+const GENERAL_PRODUCTS = [
+    { id: 'motor-tp', name: 'Motor Third Party', icon: 'car', desc: 'Mandatory NAICOM cover. Road-legal protection for third-party injury and damage.', from: 15000, unit: 'year', category: 'general' },
+    { id: 'motor-comp', name: 'Comprehensive Motor', icon: 'car-front', desc: 'Full cover for theft, fire, accident, and third-party liability.', from: 85000, unit: 'year', category: 'general' },
+    { id: 'home-protect', name: 'Home & Contents', icon: 'home', desc: 'Fire, flood, burglary, and accidental damage for homes and apartments.', from: 35000, unit: 'year', category: 'general' },
+    { id: 'health-essential', name: 'Health Insurance (HMO)', icon: 'stethoscope', desc: 'Inpatient, outpatient, maternity, and emergency cover across Nigeria.', from: 45000, unit: 'month', category: 'general' },
+    { id: 'travel-cover', name: 'Travel Insurance', icon: 'plane', desc: 'Schengen-compliant travel medical, trip cancellation, and baggage cover.', from: 8500, unit: 'trip', category: 'general' },
+    { id: 'fire-special', name: 'Fire & Special Perils', icon: 'flame', desc: 'Business property cover for fire, lightning, explosion, and riot damage.', from: 120000, unit: 'year', category: 'general' },
+];
+
+const PACKAGES = [
+    {
+        id: 'individual', name: 'Individual Starter', icon: 'user', badge: 'Most Popular',
+        desc: 'Essential protection for young professionals in Lagos, Abuja, or Port Harcourt.',
+        modules: ['motor-tp', 'term-life'],
+        from: 17500, unit: 'month equiv.',
+    },
+    {
+        id: 'family', name: 'Family Complete', icon: 'home',
+        desc: 'Comprehensive cover for households — car, home, health, and family life protection.',
+        modules: ['motor-comp', 'family-shield', 'home-protect', 'health-essential'],
+        from: 145000, unit: 'month equiv.',
+    },
+    {
+        id: 'business', name: 'Business Owner', icon: 'briefcase',
+        desc: 'SME fire cover, group life for staff, and fleet motor for delivery or logistics.',
+        modules: ['fire-special', 'group-life', 'motor-comp'],
+        from: 185000, unit: 'month equiv.',
+    },
+    {
+        id: 'custom', name: 'Build Your Stack', icon: 'sliders-horizontal',
+        desc: 'Pick exactly the modules you need — toggle cover on and off like features.',
+        modules: [],
+        from: 0, unit: 'custom',
+    },
+];
+
+const ALL_PRODUCTS = [...LIFE_PRODUCTS, ...GENERAL_PRODUCTS];
+const productById = Object.fromEntries(ALL_PRODUCTS.map(p => [p.id, p]));
+
+const STORAGE = { policies: 'csng_policies', claims: 'csng_claims', profile: 'csng_profile' };
+
+const App = {
+    policies: [],
+    claims: [],
+    profile: {},
+    quote: null,
+    toastTimer: null,
+
+    init() {
+        this.loadData();
+        this.bindEvents();
+        this.renderRoute(this.parseHash());
+        window.addEventListener('popstate', () => this.renderRoute(this.parseHash()));
+    },
+
+    loadData() {
+        try {
+            this.policies = JSON.parse(localStorage.getItem(STORAGE.policies) || '[]');
+            this.claims = JSON.parse(localStorage.getItem(STORAGE.claims) || '[]');
+            this.profile = JSON.parse(localStorage.getItem(STORAGE.profile) || '{}');
+        } catch {
+            this.policies = [];
+            this.claims = [];
+            this.profile = {};
+        }
+    },
+
+    savePolicies() { localStorage.setItem(STORAGE.policies, JSON.stringify(this.policies)); },
+    saveClaims() { localStorage.setItem(STORAGE.claims, JSON.stringify(this.claims)); },
+    saveProfile() { localStorage.setItem(STORAGE.profile, JSON.stringify(this.profile)); },
+
+    bindEvents() {
+        document.getElementById('app').addEventListener('click', (e) => {
+            const el = e.target.closest('[data-action]');
+            if (!el) return;
+            const action = el.dataset.action;
+
+            if (action === 'navigate') this.navigate({ view: el.dataset.view });
+            else if (action === 'start-quote') this.startQuote(el.dataset.productId, el.dataset.packageId);
+            else if (action === 'quote-next') this.quoteNext();
+            else if (action === 'quote-back') this.quoteBack();
+            else if (action === 'toggle-module') this.toggleModule(el.dataset.moduleId);
+            else if (action === 'select-package') this.selectPackage(el.dataset.packageId);
+            else if (action === 'pay') this.completePayment();
+            else if (action === 'download-cert') this.downloadCert(el.dataset.policyId);
+            else if (action === 'file-claim') this.fileClaim(el.dataset.policyId);
+            else if (action === 'submit-claim') this.submitClaim();
+            else if (action === 'view-policy') this.navigate({ view: 'policy', id: el.dataset.policyId });
+            else if (action === 'faq-toggle') this.toggleFaq(el);
+        });
+
+        document.getElementById('main-content').addEventListener('change', (e) => {
+            if (e.target.matches('[data-quote-field]')) {
+                const field = e.target.dataset.quoteField;
+                this.quote.form[field] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                if (field === 'productId') this.onProductChange();
+                if (field === 'paymentPlan') this.recalculateQuote();
+                if (['age', 'sumAssured', 'vehicleValue', 'propertyValue', 'employees'].includes(field)) this.recalculateQuote();
+            }
+            if (e.target.matches('[data-claim-field]')) {
+                if (!this.quote) this.quote = { claimForm: {} };
+                if (!this.quote.claimForm) this.quote.claimForm = {};
+                this.quote.claimForm[e.target.dataset.claimField] = e.target.value;
+            }
+        });
+
+        document.getElementById('main-content').addEventListener('input', (e) => {
+            if (e.target.matches('[data-quote-field]') && this.quote?.form) {
+                this.quote.form[e.target.dataset.quoteField] = e.target.value;
+            }
+            if (e.target.matches('[data-claim-field]')) {
+                if (!this.quote) this.quote = { claimForm: {} };
+                if (!this.quote.claimForm) this.quote.claimForm = {};
+                this.quote.claimForm[e.target.dataset.claimField] = e.target.value;
+            }
+        });
+    },
+
+    parseHash() {
+        const h = location.hash.slice(1) || 'landing';
+        if (h.startsWith('quote')) return { view: 'quote', step: this.quote?.step || 0 };
+        if (h.startsWith('policy/')) return { view: 'policy', id: h.split('/')[1] };
+        return { view: h };
+    },
+
+    navigate(route, push = true) {
+        if (push) {
+            let hash = route.view;
+            if (route.view === 'quote') hash = `quote/${this.quote?.step || 0}`;
+            if (route.view === 'policy') hash = `policy/${route.id}`;
+            history.pushState(route, '', `#${hash}`);
+        }
+        this.renderRoute(route);
+    },
+
+    renderRoute(route) {
+        const main = document.getElementById('main-content');
+        const mobileNav = document.getElementById('mobile-nav');
+        const showMobileNav = ['landing', 'products', 'packages', 'dashboard', 'claims'].includes(route.view);
+        mobileNav.classList.toggle('hidden', !showMobileNav);
+
+        switch (route.view) {
+            case 'landing': main.innerHTML = this.renderLanding(); break;
+            case 'products': main.innerHTML = this.renderProducts(); break;
+            case 'packages': main.innerHTML = this.renderPackages(); break;
+            case 'quote': main.innerHTML = this.renderQuote(); break;
+            case 'dashboard': main.innerHTML = this.renderDashboard(); break;
+            case 'claims': main.innerHTML = this.renderClaims(); break;
+            case 'policy': main.innerHTML = this.renderPolicyDetail(route.id); break;
+            default: main.innerHTML = this.renderLanding();
+        }
+
+        this.updateMobileNav(route.view);
+        this.refreshIcons();
+        main.scrollTop = 0;
+        window.scrollTo({ top: 0 });
+    },
+
+    updateMobileNav(view) {
+        document.querySelectorAll('.nav-mobile').forEach(btn => {
+            const match = btn.dataset.action === 'navigate' && btn.dataset.view === view;
+            btn.classList.toggle('text-brand-600', match);
+            btn.classList.toggle('text-slate-400', !match);
+        });
+    },
+
+    startQuote(productId, packageId) {
+        const modules = packageId
+            ? (PACKAGES.find(p => p.id === packageId)?.modules || [])
+            : productId ? [productId] : [];
+
+        this.quote = {
+            step: 0,
+            modules: [...modules],
+            packageId: packageId || null,
+            form: {
+                type: productId ? (productById[productId]?.category || 'general') : 'both',
+                productId: productId || '',
+                firstName: this.profile.firstName || '',
+                lastName: this.profile.lastName || '',
+                email: this.profile.email || '',
+                phone: this.profile.phone || '',
+                state: this.profile.state || 'Lagos',
+                age: this.profile.age || '',
+                sumAssured: '5000000',
+                vehicleMake: '', vehicleModel: '', vehicleYear: '', vehicleValue: '3500000',
+                propertyValue: '15000000', employees: '5',
+                paymentPlan: 'annual',
+            },
+            premium: 0,
+            breakdown: [],
+        };
+        if (modules.length) this.recalculateQuote();
+        this.navigate({ view: 'quote' });
+    },
+
+    selectPackage(id) {
+        this.startQuote(null, id);
+    },
+
+    toggleModule(id) {
+        const idx = this.quote.modules.indexOf(id);
+        if (idx >= 0) this.quote.modules.splice(idx, 1);
+        else this.quote.modules.push(id);
+        this.recalculateQuote();
+        this.renderRoute({ view: 'quote' });
+    },
+
+    quoteNext() {
+        if (!this.validateStep()) return;
+        if (this.quote.step === 3) this.recalculateQuote();
+        if (this.quote.step < 4) {
+            this.quote.step++;
+            history.replaceState({ view: 'quote' }, '', `#quote/${this.quote.step}`);
+            this.renderRoute({ view: 'quote' });
+        }
+    },
+
+    quoteBack() {
+        if (this.quote.step > 0) {
+            this.quote.step--;
+            history.replaceState({ view: 'quote' }, '', `#quote/${this.quote.step}`);
+            this.renderRoute({ view: 'quote' });
+        } else {
+            this.navigate({ view: 'landing' });
+        }
+    },
+
+    validateStep() {
+        const f = this.quote.form;
+        const steps = [
+            () => this.quote.modules.length > 0 || !!f.productId,
+            () => true,
+            () => f.firstName && f.lastName && f.phone && f.email && f.state,
+            () => true,
+        ];
+        const valid = steps[this.quote.step]?.() ?? true;
+        if (!valid) this.showToast('Please complete all required fields');
+        return valid;
+    },
+
+    onProductChange() {
+        const p = productById[this.quote.form.productId];
+        if (p && !this.quote.modules.includes(p.id)) {
+            this.quote.modules = [p.id];
+        }
+        this.recalculateQuote();
+    },
+
+    recalculateQuote() {
+        const f = this.quote.form;
+        const modules = this.quote.modules.length ? this.quote.modules : (f.productId ? [f.productId] : []);
+        const breakdown = [];
+        let total = 0;
+
+        modules.forEach(id => {
+            const p = productById[id];
+            if (!p) return;
+            let amount = p.from;
+
+            if (id === 'term-life' || id === 'family-shield') {
+                const age = parseInt(f.age) || 30;
+                const sum = parseInt(f.sumAssured) || 5000000;
+                amount = Math.round(p.from * (1 + (age - 25) * 0.04) * (sum / 5000000));
+            }
+            if (id === 'motor-comp') {
+                const val = parseInt(f.vehicleValue) || 3500000;
+                amount = Math.round(85000 + val * 0.025);
+            }
+            if (id === 'home-protect' || id === 'fire-special') {
+                const val = parseInt(f.propertyValue) || 15000000;
+                amount = Math.round(Math.max(p.from, val * 0.003));
+            }
+            if (id === 'group-life') {
+                const emp = parseInt(f.employees) || 5;
+                amount = p.from * emp;
+            }
+            if (id === 'wealth-builder' || id === 'education-plan') {
+                amount = Math.round(p.from * (1 + ((parseInt(f.age) || 30) - 25) * 0.03));
+            }
+
+            if (f.paymentPlan === 'monthly' && !['travel-cover'].includes(id)) {
+                amount = Math.round(amount / 10); // ~10 months equivalent
+            }
+
+            breakdown.push({ id, name: p.name, amount, unit: f.paymentPlan === 'monthly' && !['travel-cover', 'motor-tp', 'motor-comp'].includes(id) ? 'month' : p.unit });
+            total += amount;
+        });
+
+        this.quote.breakdown = breakdown;
+        this.quote.premium = total;
+    },
+
+    completePayment() {
+        const f = this.quote.form;
+        this.profile = { firstName: f.firstName, lastName: f.lastName, email: f.email, phone: f.phone, state: f.state, age: f.age };
+        this.saveProfile();
+
+        const policyId = 'CSNG-' + Date.now().toString(36).toUpperCase();
+        const policy = {
+            id: policyId,
+            holder: `${f.firstName} ${f.lastName}`,
+            email: f.email,
+            phone: f.phone,
+            state: f.state,
+            modules: [...this.quote.modules],
+            breakdown: [...this.quote.breakdown],
+            premium: this.quote.premium,
+            paymentPlan: f.paymentPlan,
+            startDate: new Date().toISOString().split('T')[0],
+            expiryDate: this.calcExpiry(f.paymentPlan),
+            status: 'active',
+        };
+        this.policies.unshift(policy);
+        this.savePolicies();
+        this.quote = null;
+        this.showToast('Policy bound successfully!');
+        this.navigate({ view: 'policy', id: policyId });
+    },
+
+    calcExpiry(plan) {
+        const d = new Date();
+        if (plan === 'monthly') d.setMonth(d.getMonth() + 1);
+        else d.setFullYear(d.getFullYear() + 1);
+        return d.toISOString().split('T')[0];
+    },
+
+    fileClaim(policyId) {
+        this.quote = { claimForm: { policyId, type: '', description: '', amount: '', date: new Date().toISOString().split('T')[0] } };
+        this.navigate({ view: 'claims' });
+    },
+
+    submitClaim() {
+        const cf = this.quote?.claimForm;
+        if (!cf?.policyId || !cf.type || !cf.description) {
+            this.showToast('Please fill in all claim fields');
+            return;
+        }
+        const claim = {
+            id: 'CLM-' + Date.now().toString(36).toUpperCase(),
+            ...cf,
+            status: 'submitted',
+            submittedAt: new Date().toISOString(),
+        };
+        this.claims.unshift(claim);
+        this.saveClaims();
+        this.quote = null;
+        this.showToast('Claim submitted — we will respond within 24 hours');
+        this.renderRoute({ view: 'claims' });
+    },
+
+    downloadCert(policyId) {
+        const p = this.policies.find(x => x.id === policyId);
+        if (!p) return;
+        const text = `COVERSTACK NG — CERTIFICATE OF INSURANCE\n\nPolicy No: ${p.id}\nHolder: ${p.holder}\nStatus: ${p.status.toUpperCase()}\nEffective: ${p.startDate} to ${p.expiryDate}\nPremium: ${formatNaira(p.premium)}\n\nCover:\n${p.breakdown.map(b => `- ${b.name}: ${formatNaira(b.amount)}/${b.unit}`).join('\n')}\n\nNAICOM Regulated | Licensed Underwriter Partner\nThis document serves as proof of insurance.`;
+        const blob = new Blob([text], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${p.id}-certificate.txt`;
+        a.click();
+        this.showToast('Certificate downloaded');
+    },
+
+    toggleFaq(btn) {
+        const panel = btn.nextElementSibling;
+        const open = !panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', open);
+        btn.querySelector('[data-lucide="chevron-down"]')?.classList.toggle('rotate-180', !open);
+    },
+
+    showToast(msg) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-msg').textContent = msg;
+        t.classList.remove('hidden');
+        clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => t.classList.add('hidden'), 2800);
+    },
+
+    refreshIcons() { if (window.lucide) lucide.createIcons(); },
+
+    /* ─── RENDER: Landing ─── */
+    renderLanding() {
+        return `
+        <div class="fade-in">
+            <!-- Hero -->
+            <section class="gradient-hero pt-12 pb-20 px-4 sm:px-6">
+                <div class="max-w-4xl mx-auto text-center">
+                    <div class="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
+                        <i data-lucide="badge-check" class="w-3.5 h-3.5" aria-hidden="true"></i>
+                        NAICOM Licensed · Pay with Paystack · USSD *737*CSNG#
+                    </div>
+                    <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl text-slate-950 leading-[1.1] tracking-tight mb-5">
+                        Insurance at the<br><span class="text-brand-600">speed of now.</span>
+                    </h1>
+                    <p class="text-lg text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">
+                        Life and general insurance built for Nigeria. Get instant quotes for motor, home, health, and life cover — bind same day, manage everything in one place.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button type="button" data-action="start-quote" class="btn-press bg-brand-600 hover:bg-brand-700 text-white font-semibold px-8 py-4 rounded-2xl text-base shadow-xl shadow-brand-600/25 transition-colors">
+                            Get Instant Quote
+                        </button>
+                        <button type="button" data-action="navigate" data-view="packages" class="btn-press bg-white border border-slate-200 text-slate-800 font-semibold px-8 py-4 rounded-2xl text-base hover:border-brand-300 hover:bg-brand-50 transition-colors">
+                            View Packages
+                        </button>
+                    </div>
+                    <p class="text-sm text-slate-500 mt-5">Most Nigerians complete a quote in under 5 minutes</p>
+                </div>
+            </section>
+
+            <!-- Trust bar -->
+            <section class="border-y border-slate-200 bg-white py-8 px-4">
+                <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    ${[
+                        ['40+', 'Partner Insurers'],
+                        ['₦2.1B+', 'Claims Paid'],
+                        ['24hr', 'Claim Response'],
+                        ['4.9★', 'App Store Rating'],
+                    ].map(([val, label]) => `
+                        <div>
+                            <p class="text-2xl font-bold text-brand-600">${val}</p>
+                            <p class="text-sm text-slate-500 mt-1">${label}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+
+            <!-- How it works (Corgi-style comparison) -->
+            <section class="py-20 px-4 sm:px-6 max-w-5xl mx-auto">
+                <h2 class="font-serif text-3xl text-center text-slate-950 mb-3">No more broker back-and-forth</h2>
+                <p class="text-center text-slate-600 mb-12 max-w-xl mx-auto">Traditional insurance in Nigeria takes weeks. CoverStack gives you a quote in minutes.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-slate-100 rounded-3xl p-8 border border-slate-200">
+                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Legacy Process</p>
+                        <ul class="space-y-3 text-slate-600 text-sm">
+                            ${['Find a broker', 'Fill paper forms', 'Wait 1–3 weeks for quote', 'Pay via bank transfer', 'Collect policy in person'].map(s => `
+                                <li class="flex items-center gap-2"><i data-lucide="x" class="w-4 h-4 text-red-400 shrink-0" aria-hidden="true"></i>${s}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    <div class="bg-brand-50 rounded-3xl p-8 border border-brand-200">
+                        <p class="text-sm font-semibold text-brand-700 uppercase tracking-wider mb-4">CoverStack NG</p>
+                        <ul class="space-y-3 text-slate-700 text-sm">
+                            ${['Apply online in 5 minutes', 'Instant premium calculation', 'Pay with card, bank, or USSD', 'Policy documents emailed instantly', 'File claims from your phone'].map(s => `
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-brand-600 shrink-0" aria-hidden="true"></i>${s}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Product preview -->
+            <section class="py-16 px-4 sm:px-6 bg-white">
+                <div class="max-w-5xl mx-auto">
+                    <div class="flex items-end justify-between mb-8">
+                        <div>
+                            <h2 class="font-serif text-3xl text-slate-950">Life & General Cover</h2>
+                            <p class="text-slate-600 mt-2">Toggle modules as your life evolves — from first car to family to business.</p>
+                        </div>
+                        <button type="button" data-action="navigate" data-view="products" class="hidden sm:flex text-brand-600 font-semibold text-sm items-center gap-1 hover:gap-2 transition-all">
+                            All products <i data-lucide="arrow-right" class="w-4 h-4" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        ${ALL_PRODUCTS.slice(0, 6).map(p => this.renderProductCard(p)).join('')}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Packages -->
+            <section class="py-16 px-4 sm:px-6">
+                <div class="max-w-5xl mx-auto">
+                    <h2 class="font-serif text-3xl text-slate-950 text-center mb-3">Pre-built packages for every stage</h2>
+                    <p class="text-center text-slate-600 mb-10">Like Corgi's stage packages — but for Nigerian life milestones.</p>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        ${PACKAGES.map(pkg => this.renderPackageCard(pkg)).join('')}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonials -->
+            <section class="py-16 px-4 sm:px-6 bg-slate-950 text-white">
+                <div class="max-w-5xl mx-auto">
+                    <h2 class="font-serif text-3xl text-center mb-10">Trusted by Nigerians nationwide</h2>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        ${[
+                            ['Ada O.', 'Lagos', 'Got comprehensive motor and term life in one session. My COI was in my inbox before I finished lunch.'],
+                            ['Emeka N.', 'Abuja', 'Our startup needed group life for 12 employees. CoverStack had us NAICOM-compliant in a day.'],
+                            ['Fatima B.', 'Kano', 'Filed a motor claim with photos from the accident scene. Paid out in 48 hours via bank transfer.'],
+                        ].map(([name, city, quote]) => `
+                            <blockquote class="bg-slate-850 rounded-2xl p-6 border border-slate-800">
+                                <p class="text-slate-300 text-sm leading-relaxed mb-4">"${esc(quote)}"</p>
+                                <footer class="text-sm"><span class="font-semibold text-white">${esc(name)}</span> · ${esc(city)}</footer>
+                            </blockquote>
+                        `).join('')}
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section class="py-16 px-4 sm:px-6 max-w-3xl mx-auto">
+                <h2 class="font-serif text-3xl text-center text-slate-950 mb-8">Frequently asked questions</h2>
+                <div class="space-y-3">
+                    ${[
+                        ['Is CoverStack NG licensed?', 'Yes. CoverStack operates as a NAICOM-regulated digital insurance platform in partnership with licensed life and non-life underwriters in Nigeria. All policies comply with the Nigerian Insurance Industry Reform Act (NIIRA) 2025.'],
+                        ['How fast can I get covered?', 'Most customers receive an instant quote and can bind coverage the same day. Motor third-party certificates are generated immediately after payment.'],
+                        ['What payment methods do you accept?', 'We accept debit/credit cards, bank transfers, and USSD (*737*CSNG#) via Paystack. Installments available on life and health plans.'],
+                        ['Can I buy both life and general insurance?', 'Absolutely. Our modular stack lets you combine term life, motor, home, and health cover in a single policy bundle with one dashboard.'],
+                        ['How do claims work?', 'File claims in-app with photos and description. Our AI-assisted triage routes your claim instantly. Most motor and health claims are resolved within 24–72 hours.'],
+                    ].map(([q, a]) => `
+                        <div class="border border-slate-200 rounded-2xl overflow-hidden">
+                            <button type="button" data-action="faq-toggle" class="w-full flex items-center justify-between p-5 text-left font-semibold text-slate-800 hover:bg-slate-50 transition-colors">
+                                ${esc(q)}
+                                <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 shrink-0 transition-transform" aria-hidden="true"></i>
+                            </button>
+                            <div class="hidden px-5 pb-5 text-sm text-slate-600 leading-relaxed">${esc(a)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section class="py-16 px-4 sm:px-6">
+                <div class="max-w-3xl mx-auto bg-brand-600 rounded-3xl p-10 text-center text-white shadow-2xl shadow-brand-600/30">
+                    <h2 class="font-serif text-3xl mb-3">Ready to get covered?</h2>
+                    <p class="text-brand-100 mb-6">Join 40,000+ Nigerians who switched to faster, smarter insurance.</p>
+                    <button type="button" data-action="start-quote" class="btn-press bg-white text-brand-700 font-bold px-8 py-4 rounded-2xl hover:bg-brand-50 transition-colors">
+                        Start Your Quote — It's Free
+                    </button>
+                </div>
+            </section>
+
+            <footer class="border-t border-slate-200 py-10 px-4 text-center text-sm text-slate-500">
+                <p class="font-semibold text-slate-700 mb-1">CoverStack NG</p>
+                <p>NAICOM Licensed Digital Insurance Platform · Lagos, Nigeria</p>
+                <p class="mt-2">support@coverstack.ng · 0201 700 1234</p>
+            </footer>
+        </div>`;
+    },
+
+    renderProductCard(p) {
+        return `
+            <div class="card-lift bg-white rounded-2xl p-5 border border-slate-200">
+                <div class="w-11 h-11 rounded-xl bg-brand-50 flex items-center justify-center mb-4">
+                    <i data-lucide="${p.icon}" class="w-5 h-5 text-brand-600" aria-hidden="true"></i>
+                </div>
+                <span class="text-[10px] font-bold uppercase tracking-wider ${p.category === 'life' ? 'text-violet-600' : 'text-blue-600'}">${p.category === 'life' ? 'Life' : 'General'}</span>
+                <h3 class="font-semibold text-slate-900 mt-1 mb-2">${esc(p.name)}</h3>
+                <p class="text-sm text-slate-500 mb-4 line-clamp-2">${esc(p.desc)}</p>
+                <div class="flex items-center justify-between">
+                    <p class="text-sm"><span class="text-slate-400">From </span><span class="font-bold text-brand-600">${formatNaira(p.from)}</span><span class="text-slate-400">/${p.unit}</span></p>
+                    <button type="button" data-action="start-quote" data-product-id="${p.id}" class="text-brand-600 text-sm font-semibold hover:underline">Quote →</button>
+                </div>
+            </div>`;
+    },
+
+    renderPackageCard(pkg) {
+        return `
+            <div class="card-lift bg-white rounded-2xl p-6 border border-slate-200 relative ${pkg.badge ? 'ring-2 ring-brand-500' : ''}">
+                ${pkg.badge ? `<span class="absolute -top-3 left-4 bg-brand-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">${pkg.badge}</span>` : ''}
+                <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center mb-4">
+                    <i data-lucide="${pkg.icon}" class="w-5 h-5 text-slate-600" aria-hidden="true"></i>
+                </div>
+                <h3 class="font-semibold text-slate-900 mb-1">${esc(pkg.name)}</h3>
+                <p class="text-xs text-slate-500 mb-4 leading-relaxed">${esc(pkg.desc)}</p>
+                ${pkg.modules.length ? `
+                    <div class="flex flex-wrap gap-1 mb-4">
+                        ${pkg.modules.map(m => `<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${esc(productById[m]?.name.split(' ')[0] || m)}</span>`).join('')}
+                    </div>
+                ` : ''}
+                <p class="text-sm mb-4">${pkg.from ? `<span class="text-slate-400">From </span><span class="font-bold">${formatNaira(pkg.from)}</span>` : '<span class="font-bold text-brand-600">Custom pricing</span>'}</p>
+                <button type="button" data-action="select-package" data-package-id="${pkg.id}" class="btn-press w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold py-3 rounded-xl transition-colors">
+                    ${pkg.id === 'custom' ? 'Build Your Stack' : 'Get Instant Quote'}
+                </button>
+            </div>`;
+    },
+
+    renderProducts() {
+        return `
+        <div class="fade-in max-w-5xl mx-auto px-4 sm:px-6 py-10 pb-28 md:pb-10">
+            <h1 class="font-serif text-3xl sm:text-4xl text-slate-950 mb-2">All Products</h1>
+            <p class="text-slate-600 mb-10">Life and general insurance modules — toggle what you need, skip what you don't.</p>
+
+            <h2 class="text-sm font-bold uppercase tracking-wider text-violet-600 mb-4">Life Insurance</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+                ${LIFE_PRODUCTS.map(p => this.renderProductCard(p)).join('')}
+            </div>
+
+            <h2 class="text-sm font-bold uppercase tracking-wider text-blue-600 mb-4">General Insurance</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${GENERAL_PRODUCTS.map(p => this.renderProductCard(p)).join('')}
+            </div>
+        </div>`;
+    },
+
+    renderPackages() {
+        return `
+        <div class="fade-in max-w-5xl mx-auto px-4 sm:px-6 py-10 pb-28 md:pb-10">
+            <h1 class="font-serif text-3xl sm:text-4xl text-slate-950 mb-2">Coverage Packages</h1>
+            <p class="text-slate-600 mb-10">Pre-configured bundles for common Nigerian life stages. Customize anytime from your dashboard.</p>
+            <div class="grid sm:grid-cols-2 gap-6">
+                ${PACKAGES.map(pkg => this.renderPackageCard(pkg)).join('')}
+            </div>
+        </div>`;
+    },
+
+    /* ─── RENDER: Quote Wizard ─── */
+    renderQuote() {
+        if (!this.quote) { this.startQuote(); return ''; }
+
+        const steps = ['Choose Cover', 'Your Details', 'Risk Info', 'Your Quote', 'Payment'];
+        const step = this.quote.step;
+
+        return `
+        <div class="fade-in max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-28">
+            <!-- Progress -->
+            <div class="flex items-center justify-between mb-8">
+                ${steps.map((s, i) => `
+                    <div class="flex flex-col items-center flex-1">
+                        <div class="step-dot w-3 h-3 rounded-full bg-slate-200 transition-all ${i <= step ? (i < step ? 'done' : 'active') : ''}"></div>
+                        <span class="text-[10px] mt-1.5 text-slate-500 hidden sm:block ${i === step ? 'text-brand-600 font-semibold' : ''}">${s}</span>
+                    </div>
+                    ${i < steps.length - 1 ? '<div class="flex-1 h-px bg-slate-200 -mt-4"></div>' : ''}
+                `).join('')}
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                ${[
+                    this.renderQuoteStep0,
+                    this.renderQuoteStep1,
+                    this.renderQuoteStep2,
+                    this.renderQuoteStep3,
+                    this.renderQuoteStep4,
+                ][step]?.call(this) || ''}
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button type="button" data-action="quote-back" class="btn-press flex-1 border border-slate-200 text-slate-700 font-semibold py-3.5 rounded-xl hover:bg-slate-50 transition-colors">
+                    ← Back
+                </button>
+                ${step < 4 ? `
+                    <button type="button" data-action="quote-next" class="btn-press flex-1 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3.5 rounded-xl transition-colors">
+                        Continue →
+                    </button>
+                ` : `
+                    <button type="button" data-action="pay" class="btn-press flex-1 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3.5 rounded-xl transition-colors">
+                        Pay ${formatNaira(this.quote.premium)} →
+                    </button>
+                `}
+            </div>
+        </div>`;
+    },
+
+    renderQuoteStep0() {
+        const f = this.quote.form;
+        return `
+            <h2 class="font-serif text-2xl text-slate-950 mb-2">What do you need covered?</h2>
+            <p class="text-slate-600 text-sm mb-6">Select one or more modules. You can always add more later.</p>
+
+            <p class="text-xs font-bold uppercase tracking-wider text-violet-600 mb-3">Life Insurance</p>
+            <div class="grid grid-cols-1 gap-2 mb-6">
+                ${LIFE_PRODUCTS.map(p => this.renderModuleToggle(p)).join('')}
+            </div>
+
+            <p class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-3">General Insurance</p>
+            <div class="grid grid-cols-1 gap-2">
+                ${GENERAL_PRODUCTS.map(p => this.renderModuleToggle(p)).join('')}
+            </div>`;
+    },
+
+    renderModuleToggle(p) {
+        const selected = this.quote.modules.includes(p.id);
+        return `
+            <button type="button" data-action="toggle-module" data-module-id="${p.id}"
+                class="toggle-module flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all ${selected ? 'selected' : 'border-slate-200 hover:border-slate-300'}">
+                <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                    <i data-lucide="${p.icon}" class="w-5 h-5 text-slate-600" aria-hidden="true"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-semibold text-sm text-slate-900">${esc(p.name)}</p>
+                    <p class="text-xs text-slate-500">From ${formatNaira(p.from)}/${p.unit}</p>
+                </div>
+                <div class="check-icon w-6 h-6 rounded-full bg-brand-600 flex items-center justify-center opacity-0 scale-75 transition-all">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-white" aria-hidden="true"></i>
+                </div>
+            </button>`;
+    },
+
+    renderQuoteStep1() {
+        const f = this.quote.form;
+        return `
+            <h2 class="font-serif text-2xl text-slate-950 mb-2">About you</h2>
+            <p class="text-slate-600 text-sm mb-6">We'll use this to generate your quote and policy documents.</p>
+            <div class="grid sm:grid-cols-2 gap-4">
+                ${this.renderInput('First name', 'firstName', f.firstName, 'text', true)}
+                ${this.renderInput('Last name', 'lastName', f.lastName, 'text', true)}
+                ${this.renderInput('Phone (WhatsApp)', 'phone', f.phone, 'tel', true, '+234')}
+                ${this.renderInput('Email', 'email', f.email, 'email', true)}
+                ${this.renderSelect('State', 'state', f.state, NIGERIAN_STATES)}
+                ${this.renderInput('Age', 'age', f.age, 'number', true)}
+            </div>
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Payment preference</label>
+                <div class="flex gap-3">
+                    ${['annual', 'monthly'].map(plan => `
+                        <label class="flex-1 flex items-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${f.paymentPlan === plan ? 'border-brand-600 bg-brand-50' : 'border-slate-200'}">
+                            <input type="radio" name="paymentPlan" data-quote-field="paymentPlan" value="${plan}" ${f.paymentPlan === plan ? 'checked' : ''} class="accent-brand-600">
+                            <span class="text-sm font-medium capitalize">${plan}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            </div>`;
+    },
+
+    renderQuoteStep2() {
+        const f = this.quote.form;
+        const modules = this.quote.modules;
+        const hasLife = modules.some(id => productById[id]?.category === 'life');
+        const hasMotor = modules.some(id => id.startsWith('motor'));
+        const hasProperty = modules.some(id => ['home-protect', 'fire-special'].includes(id));
+        const hasGroup = modules.includes('group-life');
+
+        return `
+            <h2 class="font-serif text-2xl text-slate-950 mb-2">Risk details</h2>
+            <p class="text-slate-600 text-sm mb-6">Help us calculate your premium accurately.</p>
+            <div class="space-y-4">
+                ${hasLife ? this.renderInput('Sum assured (₦)', 'sumAssured', f.sumAssured, 'number') : ''}
+                ${hasMotor ? `
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        ${this.renderInput('Vehicle make', 'vehicleMake', f.vehicleMake, 'text')}
+                        ${this.renderInput('Vehicle model', 'vehicleModel', f.vehicleModel, 'text')}
+                        ${this.renderInput('Year', 'vehicleYear', f.vehicleYear, 'number')}
+                        ${this.renderInput('Estimated value (₦)', 'vehicleValue', f.vehicleValue, 'number')}
+                    </div>
+                ` : ''}
+                ${hasProperty ? this.renderInput('Property/business value (₦)', 'propertyValue', f.propertyValue, 'number') : ''}
+                ${hasGroup ? this.renderInput('Number of employees', 'employees', f.employees, 'number') : ''}
+                ${!hasLife && !hasMotor && !hasProperty && !hasGroup ? '<p class="text-sm text-slate-500">No additional details needed for your selected cover.</p>' : ''}
+            </div>`;
+    },
+
+    renderQuoteStep3() {
+        this.recalculateQuote();
+        const q = this.quote;
+        return `
+            <h2 class="font-serif text-2xl text-slate-950 mb-2">Your instant quote</h2>
+            <p class="text-slate-600 text-sm mb-6">Review your premium breakdown. No hidden fees.</p>
+
+            <div class="bg-brand-50 rounded-2xl p-6 mb-6 text-center border border-brand-200">
+                <p class="text-sm text-brand-700 font-medium mb-1">Total Premium</p>
+                <p class="text-4xl font-bold text-brand-700">${formatNaira(q.premium)}</p>
+                <p class="text-xs text-brand-600 mt-1">${q.form.paymentPlan === 'monthly' ? 'per month' : 'per year'} · Instant bind available</p>
+            </div>
+
+            <div class="space-y-3 mb-6">
+                ${q.breakdown.map(b => `
+                    <div class="flex items-center justify-between py-3 border-b border-slate-100">
+                        <div>
+                            <p class="text-sm font-medium text-slate-800">${esc(b.name)}</p>
+                            <p class="text-xs text-slate-500">Per ${b.unit}</p>
+                        </div>
+                        <p class="font-semibold text-slate-900">${formatNaira(b.amount)}</p>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div class="flex items-start gap-3 p-4 bg-slate-50 rounded-xl text-sm text-slate-600">
+                <i data-lucide="shield-check" class="w-5 h-5 text-brand-600 shrink-0 mt-0.5" aria-hidden="true"></i>
+                <p>Quote valid for 30 days. Premium guaranteed for 12 months unless you change your cover. Underwritten by NAICOM-licensed partners.</p>
+            </div>`;
+    },
+
+    renderQuoteStep4() {
+        return `
+            <h2 class="font-serif text-2xl text-slate-950 mb-2">Secure payment</h2>
+            <p class="text-slate-600 text-sm mb-6">Pay via Paystack — card, bank transfer, or USSD.</p>
+
+            <div class="space-y-4 mb-6">
+                <div class="p-4 rounded-xl border-2 border-brand-600 bg-brand-50 flex items-center gap-3">
+                    <i data-lucide="credit-card" class="w-6 h-6 text-brand-600" aria-hidden="true"></i>
+                    <div>
+                        <p class="font-semibold text-sm">Paystack</p>
+                        <p class="text-xs text-slate-500">Visa, Mastercard, Verve, bank transfer, USSD</p>
+                    </div>
+                </div>
+                <div class="p-4 rounded-xl border border-slate-200 flex items-center gap-3 opacity-60">
+                    <i data-lucide="smartphone" class="w-6 h-6 text-slate-400" aria-hidden="true"></i>
+                    <div>
+                        <p class="font-semibold text-sm">USSD *737*CSNG#</p>
+                        <p class="text-xs text-slate-500">Available after first policy bind</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 text-white rounded-2xl p-6 text-center">
+                <p class="text-sm text-slate-400 mb-1">Amount due today</p>
+                <p class="text-3xl font-bold mb-4">${formatNaira(this.quote.premium)}</p>
+                <p class="text-xs text-slate-400">By paying, you agree to our terms and confirm details are accurate. Policy documents will be emailed instantly.</p>
+            </div>`;
+    },
+
+    renderInput(label, field, value, type = 'text', required = false, placeholder = '') {
+        return `
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">${esc(label)}${required ? ' *' : ''}</label>
+                <input type="${type}" data-quote-field="${field}" value="${esc(value || '')}" placeholder="${esc(placeholder)}"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all"
+                    ${required ? 'required' : ''}>
+            </div>`;
+    },
+
+    renderSelect(label, field, value, options) {
+        return `
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">${esc(label)} *</label>
+                <select data-quote-field="${field}" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 bg-white">
+                    ${options.map(o => `<option value="${esc(o)}" ${o === value ? 'selected' : ''}>${esc(o)}</option>`).join('')}
+                </select>
+            </div>`;
+    },
+
+    /* ─── RENDER: Dashboard ─── */
+    renderDashboard() {
+        const p = this.profile;
+        return `
+        <div class="fade-in max-w-4xl mx-auto px-4 sm:px-6 py-10 pb-28 md:pb-10">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="font-serif text-3xl text-slate-950">My Policies</h1>
+                    <p class="text-slate-600 text-sm mt-1">${p.firstName ? `Welcome back, ${esc(p.firstName)}` : 'Manage all your cover in one place'}</p>
+                </div>
+                <button type="button" data-action="start-quote" class="btn-press bg-brand-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl">
+                    + New Policy
+                </button>
+            </div>
+
+            ${this.policies.length === 0 ? `
+                <div class="text-center py-20 bg-white rounded-3xl border border-slate-200">
+                    <div class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="shield-off" class="w-8 h-8 text-slate-400" aria-hidden="true"></i>
+                    </div>
+                    <p class="font-semibold text-slate-800 mb-1">No policies yet</p>
+                    <p class="text-sm text-slate-500 mb-6">Get covered in under 5 minutes with an instant quote.</p>
+                    <button type="button" data-action="start-quote" class="btn-press bg-brand-600 text-white font-semibold px-6 py-3 rounded-xl">Get Your First Quote</button>
+                </div>
+            ` : `
+                <div class="space-y-4">
+                    ${this.policies.map(pol => `
+                        <div class="bg-white rounded-2xl border border-slate-200 p-5 card-lift">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <p class="text-xs font-mono text-slate-400">${esc(pol.id)}</p>
+                                    <h3 class="font-semibold text-slate-900 mt-0.5">${esc(pol.holder)}</h3>
+                                </div>
+                                <span class="text-xs font-bold uppercase px-2.5 py-1 rounded-full ${pol.status === 'active' ? 'bg-brand-50 text-brand-700' : 'bg-slate-100 text-slate-500'}">${pol.status}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1.5 mb-4">
+                                ${pol.breakdown.map(b => `<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${esc(b.name)}</span>`).join('')}
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <div>
+                                    <p class="text-slate-500">${formatNaira(pol.premium)} · ${pol.paymentPlan}</p>
+                                    <p class="text-xs text-slate-400">Expires ${pol.expiryDate}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button type="button" data-action="view-policy" data-policy-id="${pol.id}" class="text-brand-600 font-semibold text-sm">View</button>
+                                    <button type="button" data-action="download-cert" data-policy-id="${pol.id}" class="text-slate-600 font-semibold text-sm">COI ↓</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `}
+        </div>`;
+    },
+
+    renderPolicyDetail(id) {
+        const pol = this.policies.find(p => p.id === id);
+        if (!pol) return `<div class="p-10 text-center"><p>Policy not found.</p><button data-action="navigate" data-view="dashboard" class="text-brand-600 mt-4">← Back</button></div>`;
+
+        return `
+        <div class="fade-in max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-28">
+            <button type="button" data-action="navigate" data-view="dashboard" class="text-sm text-slate-500 hover:text-brand-600 mb-6 flex items-center gap-1">
+                <i data-lucide="arrow-left" class="w-4 h-4" aria-hidden="true"></i> All policies
+            </button>
+
+            <div class="bg-brand-600 text-white rounded-3xl p-8 mb-6 shadow-xl shadow-brand-600/20">
+                <div class="flex items-center gap-2 mb-4">
+                    <i data-lucide="shield-check" class="w-6 h-6" aria-hidden="true"></i>
+                    <span class="text-sm font-semibold uppercase tracking-wider text-brand-100">Active Policy</span>
+                </div>
+                <p class="font-mono text-sm text-brand-200 mb-1">${esc(pol.id)}</p>
+                <h1 class="font-serif text-3xl mb-2">${esc(pol.holder)}</h1>
+                <p class="text-brand-100 text-sm">${pol.startDate} → ${pol.expiryDate}</p>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 mb-4">
+                <h2 class="font-semibold mb-4">Coverage</h2>
+                ${pol.breakdown.map(b => `
+                    <div class="flex justify-between py-3 border-b border-slate-100 last:border-0">
+                        <span class="text-sm text-slate-700">${esc(b.name)}</span>
+                        <span class="text-sm font-semibold">${formatNaira(b.amount)}/${b.unit}</span>
+                    </div>
+                `).join('')}
+                <div class="flex justify-between pt-4 mt-2 font-bold">
+                    <span>Total</span>
+                    <span class="text-brand-600">${formatNaira(pol.premium)}</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="button" data-action="download-cert" data-policy-id="${pol.id}" class="btn-press flex-1 bg-slate-900 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4" aria-hidden="true"></i> Download COI
+                </button>
+                <button type="button" data-action="file-claim" data-policy-id="${pol.id}" class="btn-press flex-1 border border-slate-200 font-semibold py-3.5 rounded-xl hover:bg-slate-50">
+                    File a Claim
+                </button>
+            </div>
+        </div>`;
+    },
+
+    renderClaims() {
+        const cf = this.quote?.claimForm || {};
+        return `
+        <div class="fade-in max-w-2xl mx-auto px-4 sm:px-6 py-10 pb-28 md:pb-10">
+            <h1 class="font-serif text-3xl text-slate-950 mb-2">Claims</h1>
+            <p class="text-slate-600 text-sm mb-8">File and track claims. Most resolved within 24–72 hours.</p>
+
+            <!-- New claim form -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 mb-8">
+                <h2 class="font-semibold mb-4">File a new claim</h2>
+                ${this.policies.length === 0 ? '<p class="text-sm text-slate-500">You need an active policy to file a claim.</p>' : `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Policy *</label>
+                            <select data-claim-field="policyId" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white">
+                                <option value="">Select policy</option>
+                                ${this.policies.map(p => `<option value="${p.id}" ${cf.policyId === p.id ? 'selected' : ''}>${p.id} — ${esc(p.holder)}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Claim type *</label>
+                            <select data-claim-field="type" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white">
+                                <option value="">Select type</option>
+                                ${['Motor accident', 'Theft', 'Fire damage', 'Medical', 'Death benefit', 'Property damage', 'Other'].map(t =>
+                                    `<option value="${t}" ${cf.type === t ? 'selected' : ''}>${t}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Incident date</label>
+                            <input type="date" data-claim-field="date" value="${cf.date || ''}" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Estimated amount (₦)</label>
+                            <input type="number" data-claim-field="amount" value="${cf.amount || ''}" placeholder="0" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Description *</label>
+                            <textarea data-claim-field="description" rows="3" placeholder="Describe what happened…" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm resize-none">${esc(cf.description || '')}</textarea>
+                        </div>
+                        <button type="button" data-action="submit-claim" class="btn-press w-full bg-brand-600 text-white font-semibold py-3.5 rounded-xl">Submit Claim</button>
+                    </div>
+                `}
+            </div>
+
+            <!-- Claim history -->
+            ${this.claims.length > 0 ? `
+                <h2 class="font-semibold mb-4">Your claims</h2>
+                <div class="space-y-3">
+                    ${this.claims.map(c => `
+                        <div class="bg-white rounded-xl border border-slate-200 p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <p class="font-mono text-xs text-slate-400">${esc(c.id)}</p>
+                                <span class="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">${c.status}</span>
+                            </div>
+                            <p class="font-medium text-sm">${esc(c.type)}</p>
+                            <p class="text-xs text-slate-500 mt-1">${esc(c.description?.slice(0, 80))}…</p>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : ''}
+        </div>`;
+    },
+};
+
+function formatNaira(n) {
+    return '₦' + Number(n).toLocaleString('en-NG');
+}
+
+function esc(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+document.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+</body>
+</html>
